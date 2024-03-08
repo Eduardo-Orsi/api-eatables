@@ -1,7 +1,9 @@
+import os
 from typing import Annotated
 
 import requests
-from fastapi import FastAPI, Header, HTTPException
+from dotenv import load_dotenv
+from fastapi import FastAPI, HTTPException, Header
 
 from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
@@ -9,7 +11,10 @@ from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
 
 
-KANGU_API_URL = "https://portal.kangu.com.br/tms/transporte/simular"
+load_dotenv()
+KANGU_API_URL = os.getenv("KANGU_API_URL")
+KANGU_API_KEY = os.getenv("KANGU_API_KEY")
+SECRET_CODE = os.getenv("SECRET_CODE")
 
 app = FastAPI()
 
@@ -22,7 +27,7 @@ async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | Non
 
     request_shipping = RequestShippingQuotation.load_from_shipping_info(shipping_info)
 
-    header = {"token": API_KEY}
+    header = {"token": KANGU_API_KEY}
     response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=None)
 
     quotation_result = QuotationResult(data=response.json())
