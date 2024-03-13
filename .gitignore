@@ -161,3 +161,7 @@ cython_debug/
 
 # SQLite Database
 *.db
+
+# Files just in dev
+checkout_drop.json
+loveUtms.js
