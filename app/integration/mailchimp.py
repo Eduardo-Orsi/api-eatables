@@ -52,7 +52,7 @@ class MailChimp:
         abandoned_step_tag = self.__resolve_abandoned_step(abandoned_step)
         return {
             "email_address": customer.email,
-            "status": "unsubscribed",
+            "status": "subscribed",
             "language": "pt",
             "ip_signup": str(customer.ip),
             "timestamp_signup": customer.created_at.date.strftime('%Y-%m-%dT%H:%M:%SZ'),
