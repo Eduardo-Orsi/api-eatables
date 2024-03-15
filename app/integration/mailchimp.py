@@ -43,7 +43,6 @@ class MailChimp:
 
     def __add_member(self, member: dict[str, str]) -> dict[str, str]:
         try:
-            print(member)
             return self.marketing_client.lists.add_list_member(self.__list_id, member)
         except MarketingApiClientError as error:
             raise HTTPException(status_code=error.status_code, detail=error.text) from error
