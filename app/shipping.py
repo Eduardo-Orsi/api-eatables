@@ -9,6 +9,9 @@ from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
 from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
+from .models.abandoned_cart import YampiEvent
+
+from .integration.mailchimp import MailChimp
 
 
 load_dotenv()
@@ -32,3 +35,15 @@ async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | Non
 
     quotation_result = QuotationResult(data=response.json())
     return QuoteResponse.load_from_quotation_result(quotation_result)
+
+
+@app.post("/webhook/yampi/")
+async def webhook_yampi(yampi_event: YampiEvent, secret_code: Annotated[str | None, Header()] = None):
+
+    if not secret_code == SECRET_CODE:
+        raise HTTPException(status_code=404, detail="Secret Code not found")
+
+    mailchimp = MailChimp()
+    response = mailchimp.add_abandoned_cart_contact(yampi_event.resource.customer.data,
+                                                    yampi_event.resource.search.data.abandoned_step)
+    return response
