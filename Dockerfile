@@ -13,12 +13,8 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # Copy the application code into the container
 COPY ./app /code/app
 
-# Copy SSL certificates into the container from their actual location
-COPY /etc/letsencrypt/live/api.eatables.com.br/fullchain.pem /code/fullchain.pem
-COPY /etc/letsencrypt/live/api.eatables.com.br/privkey.pem /code/privkey.pem
+# Expose port 8000 for FastAPI
+EXPOSE 8000
 
-# Expose the appropriate port for HTTPS (443)
-EXPOSE 443
-
-# Command to run the FastAPI app with SSL enabled
-CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/code/privkey.pem", "--ssl-certfile", "/code/fullchain.pem"]
+# Command to run the FastAPI app with Uvicorn and SSL configuration
+CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/path/to/privkey.pem", "--ssl-certfile", "/path/to/fullchain.pem"]
