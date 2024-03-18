@@ -1,17 +1,24 @@
-#
+# Use an appropriate base image, for example, Python 3.12
 FROM python:3.12
 
-#
+# Set the working directory
 WORKDIR /code
 
-#
+# Copy requirements file to the working directory
 COPY ./requirements.txt /code/requirements.txt
 
-#
+# Install dependencies
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-#
+# Copy the application code into the container
 COPY ./app /code/app
 
-#
-CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "80"]
+# Copy SSL certificates into the container from their actual location
+COPY /etc/letsencrypt/live/api.eatables.com.br/fullchain.pem /code/fullchain.pem
+COPY /etc/letsencrypt/live/api.eatables.com.br/privkey.pem /code/privkey.pem
+
+# Expose the appropriate port for HTTPS (443)
+EXPOSE 443
+
+# Command to run the FastAPI app with SSL enabled
+CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "443", "--ssl-keyfile", "/code/privkey.pem", "--ssl-certfile", "/code/fullchain.pem"]
