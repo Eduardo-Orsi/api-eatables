@@ -8,6 +8,9 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
+    volumes:
+      - /etc/letsencrypt/live/api.eatables.com.br/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - /etc/letsencrypt/live/api.eatables.com.br/privkey.pem:/etc/ssl/private/privkey.pem:ro
 
   nginx:
     container_name: nginx
