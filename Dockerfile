@@ -17,4 +17,4 @@ COPY ./app /code/app
 EXPOSE 8000
 
 # Command to run the FastAPI app with Uvicorn and SSL configuration
-CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "8000", "--ssl-keyfile", "/etc/ssl/private/privkey.pem", "--ssl-certfile", "/etc/ssl/certs/fullchain.pem"]
+CMD ["uvicorn", "app.shipping:app", "--host", "0.0.0.0", "--port", "8000"]
