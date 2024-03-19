@@ -12,12 +12,14 @@ from .models.shipping_quotation import RequestShippingQuotation
 from .models.abandoned_cart import YampiEvent
 
 from .integration.mailchimp import MailChimp
+from .integration.yampi import Yampi
 
 
 load_dotenv()
 KANGU_API_URL = os.getenv("KANGU_API_URL")
 KANGU_API_KEY = os.getenv("KANGU_API_KEY")
 SECRET_CODE = os.getenv("SECRET_CODE")
+YAMPI_WEBHOOK_SIGNATURE = os.getenv("YAMPI_WEBHOOK_SIGNATURE")
 
 app = FastAPI()
 
@@ -38,10 +40,11 @@ async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | Non
 
 
 @app.post("/webhook/yampi/")
-async def webhook_yampi(yampi_event: YampiEvent, secret_code: Annotated[str | None, Header()] = None):
+async def webhook_yampi(yampi_event: YampiEvent, x_yampi_hmac_sha256: Annotated[str | None, Header()] = None):
 
-    if not secret_code == SECRET_CODE:
-        raise HTTPException(status_code=404, detail="Secret Code not found")
+    await Yampi.validate_webhook_signature(yampi_event.model_dump_json().encode(),
+                                           x_yampi_hmac_sha256,
+                                           YAMPI_WEBHOOK_SIGNATURE)
 
     mailchimp = MailChimp()
     response = mailchimp.add_abandoned_cart_contact(yampi_event.resource.customer.data,
