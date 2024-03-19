@@ -37,17 +37,17 @@ class MailChimp:
             "server": self.__server
         })
 
-    def add_abandoned_cart_contact(self, customer: Customer, abandoned_step: str) -> dict[str, str]:
-        member = self.__abandoned_cart_contact_to_member(customer, abandoned_step)
-        return self.__add_member(member)
+    async def add_abandoned_cart_contact(self, customer: Customer, abandoned_step: str) -> dict[str, str]:
+        member = await self.__abandoned_cart_contact_to_member(customer, abandoned_step)
+        return await self.__add_member(member)
 
-    def __add_member(self, member: dict[str, str]) -> dict[str, str]:
+    async def __add_member(self, member: dict[str, str]) -> dict[str, str]:
         try:
             return self.marketing_client.lists.add_list_member(self.__list_id, member)
         except MarketingApiClientError as error:
             raise HTTPException(status_code=error.status_code, detail=error.text) from error
 
-    def __abandoned_cart_contact_to_member(self, customer: Customer, abandoned_step: str) -> dict[str, str]:
+    async def __abandoned_cart_contact_to_member(self, customer: Customer, abandoned_step: str) -> dict[str, str]:
         abandoned_step_tag = self.__resolve_abandoned_step(abandoned_step)
         return {
             "email_address": customer.email,

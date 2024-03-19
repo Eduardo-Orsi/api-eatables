@@ -16,5 +16,5 @@ class Yampi:
             hashlib.sha256
         ).digest()).decode()
 
-        if not signature == expected_signature:
+        if not hmac.compare_digest(signature, expected_signature):
             raise HTTPException(status_code=401, detail='Invalid webhook signature')

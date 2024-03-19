@@ -3,7 +3,7 @@ from typing import Annotated
 
 import requests
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Request, Header
 
 from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
@@ -40,13 +40,13 @@ async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | Non
 
 
 @app.post("/webhook/yampi/")
-async def webhook_yampi(yampi_event: YampiEvent, x_yampi_hmac_sha256: Annotated[str | None, Header()] = None):
-
-    await Yampi.validate_webhook_signature(yampi_event.model_dump_json().encode(),
+async def webhook_yampi(yampi_event: YampiEvent, request: Request, x_yampi_hmac_sha256: Annotated[str | None, Header()] = None):
+    body = await request.body()
+    await Yampi.validate_webhook_signature(body,
                                            x_yampi_hmac_sha256,
                                            YAMPI_WEBHOOK_SIGNATURE)
 
     mailchimp = MailChimp()
-    response = mailchimp.add_abandoned_cart_contact(yampi_event.resource.customer.data,
+    response =  await mailchimp.add_abandoned_cart_contact(yampi_event.resource.customer.data,
                                                     yampi_event.resource.search.data.abandoned_step)
     return response
