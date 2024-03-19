@@ -128,7 +128,7 @@ class SearchData(BaseModel):
 
 class Spreadsheet(BaseModel):
     customer_phone: str
-    last_order_date: str
+    last_order_date: Optional[str]
     products: str
     products_skus: str
     categories: str
