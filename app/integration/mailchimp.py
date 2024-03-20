@@ -1,4 +1,5 @@
 import os
+import hashlib
 from enum import Enum
 
 from dotenv import load_dotenv
@@ -43,7 +44,8 @@ class MailChimp:
 
     async def __add_member(self, member: dict[str, str]) -> dict[str, str]:
         try:
-            return self.marketing_client.lists.add_list_member(self.__list_id, member)
+            member_email_hash = hashlib.md5(member["email_address"].encode('utf-8').lower()).hexdigest()
+            return self.marketing_client.lists.set_list_member(self.__list_id, member_email_hash, member)
         except MarketingApiClientError as error:
             raise HTTPException(status_code=error.status_code, detail=error.text) from error
 

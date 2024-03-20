@@ -163,6 +163,5 @@ cython_debug/
 *.db
 
 # Files just in dev
-checkout_drop.json
-loveUtms.js
+teste.txt
 .DS_Store
