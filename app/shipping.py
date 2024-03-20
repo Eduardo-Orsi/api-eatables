@@ -24,6 +24,7 @@ YAMPI_WEBHOOK_SIGNATURE = os.getenv("YAMPI_WEBHOOK_SIGNATURE")
 
 app = FastAPI()
 
+# pylint: disable=w0613
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     print(f"\nValidation error: {exc}\n")

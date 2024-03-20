@@ -172,7 +172,7 @@ class ResourceData(BaseModel):
     has_recommendation: bool
     is_upsell: bool
     totalizers: TotalizersData
-    shipping_service: str
+    shipping_service: Optional[str]
     tracking_data: TrackingData
     total_transactions: int
     simulate_url: HttpUrl
