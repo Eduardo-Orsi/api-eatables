@@ -3,6 +3,7 @@ from typing import Annotated
 
 import requests
 from dotenv import load_dotenv
+from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, Request, Header
 
 from .models.shipping_info import ShippingInfo
@@ -23,6 +24,10 @@ YAMPI_WEBHOOK_SIGNATURE = os.getenv("YAMPI_WEBHOOK_SIGNATURE")
 
 app = FastAPI()
 
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    print(f"\nValidation error: {exc}\n")
+    raise HTTPException(status_code=422, detail=exc.errors())
 
 @app.post("/shipping/")
 async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | None, Header()] = None):
@@ -43,8 +48,8 @@ async def shipping(shipping_info: ShippingInfo, secret_code: Annotated[str | Non
 async def webhook_yampi(yampi_event: YampiEvent, request: Request, x_yampi_hmac_sha256: Annotated[str | None, Header()] = None):
     body = await request.body()
     await Yampi.validate_webhook_signature(body,
-                                           x_yampi_hmac_sha256,
-                                           YAMPI_WEBHOOK_SIGNATURE)
+                                        x_yampi_hmac_sha256,
+                                        YAMPI_WEBHOOK_SIGNATURE)
 
     mailchimp = MailChimp()
     response =  await mailchimp.add_abandoned_cart_contact(yampi_event.resource.customer.data,
