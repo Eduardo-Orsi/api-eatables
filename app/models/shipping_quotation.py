@@ -1,5 +1,19 @@
+import os
+from enum import Enum
+from typing import Optional
+from dotenv import load_dotenv
 from pydantic import BaseModel
 from .shipping_info import ShippingInfo
+
+
+load_dotenv()
+SOURCE_ZIP_CODE = os.getenv("SOURCE_ZIP_CODE")
+
+
+class ShippingBox(Enum):
+    HEIGHT = 6
+    WIDTH = 16
+    LENGTH = 22
 
 
 class Volume(BaseModel):
@@ -27,54 +41,38 @@ class RequestShippingQuotation(BaseModel):
     vlrMerc: float
     pesoMerc: float
     volumes: list[Volume]
-    produtos: list[Produto]
+    produtos: Optional[list[Produto]]
     servicos: list[str]
-    ordernar: str
+    ordernar: Optional[str]
 
     @classmethod
     def load_from_shipping_info(cls, shipping_info: ShippingInfo) -> "RequestShippingQuotation":
         products = []
         love_chocolate_quantity = 0
+        peso = 0
         for sku in shipping_info.skus:
-            products.append(
-                Produto(
-                    peso=sku.weight,
-                    altura=sku.height,
-                    largura=sku.width,
-                    comprimento=sku.length,
-                    valor=sku.price,
-                    quantidade=sku.quantity
-                )
-            )
+            peso = peso + sku.weight
 
             if sku.sku == "LOVCHOBOX":
                 love_chocolate_quantity = sku.quantity
 
-        altura = 4
-        largura = 16
-        peso = 0.3
-        if love_chocolate_quantity >= 2:
-            altura = 19
-            largura = 13
-            peso = 0.4
-
         volume = Volume(
             peso=peso,
-            altura=altura,
-            largura=largura,
-            comprimento=22,
-            tipo="caixa",
+            altura=ShippingBox.HEIGHT.value,
+            largura=ShippingBox.WIDTH.value,
+            comprimento=ShippingBox.LENGTH.value,
+            tipo="C",
             valor=shipping_info.amount,
-            quantidade=1
+            quantidade=love_chocolate_quantity
         )
 
         return RequestShippingQuotation(
-            cepOrigem="88331085",
+            cepOrigem=SOURCE_ZIP_CODE,
             cepDestino=shipping_info.zipcode,
             vlrMerc=shipping_info.amount,
             pesoMerc=peso,
             volumes=[volume],
             produtos=products,
             servicos=["E", "X"],
-            ordernar=""
+            ordernar="preco"
         )

@@ -164,4 +164,7 @@ cython_debug/
 
 # Files just in dev
 teste.txt
+teste.csv
 .DS_Store
+pyrightconfig.json
+.pylintrc
