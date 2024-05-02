@@ -43,7 +43,4 @@ class ShippingScore:
         else:
             best_quote.price = best_quote.price * 0.75
 
-        print(f"Best Quote: {best_quote}")
-        print(f"Fast Quote: {fastest_quote}")
-
         return [best_quote, fastest_quote]
