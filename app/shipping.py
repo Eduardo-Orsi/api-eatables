@@ -42,7 +42,6 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
         raise HTTPException(status_code=404, detail="Secret Code not found")
 
     address = await CEP.get_address_from_cep(shipping_info.zipcode)
-    print(shipping_info)
     request_shipping = RequestShippingQuotation.load_from_shipping_info(shipping_info)
 
     header = {"token": KANGU_API_KEY}
