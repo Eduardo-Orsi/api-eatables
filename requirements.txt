@@ -1,8 +1,10 @@
 annotated-types==0.6.0
 anyio==4.3.0
 certifi==2024.2.2
+cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
+cryptography==42.0.5
 dnspython==2.6.1
 email_validator==2.1.1
 fastapi==0.109.2
@@ -14,6 +16,7 @@ iniconfig==2.0.0
 mailchimp-marketing==3.0.80
 packaging==23.2
 pluggy==1.4.0
+pycparser==2.21
 pydantic==2.6.1
 pydantic_core==2.16.2
 pytest==8.0.1
