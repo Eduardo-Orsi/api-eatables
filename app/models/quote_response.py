@@ -6,7 +6,17 @@ from .quotation_result import QuotationResult
 
 
 def clean_reference(reference: str) -> str:
-    cleaned_reference = re.sub(r'(_\d+)_', '_', reference)
+    """
+    Cleans the reference string by keeping only the first three parts separated by underscores.
+
+    Args:
+        reference (str): The original reference string.
+
+    Returns:
+        str: The cleaned reference string.
+    """
+    reference_parts = reference.split("_")
+    cleaned_reference = "_".join(reference_parts[:3])
     return cleaned_reference
 
 class Quote(BaseModel):
