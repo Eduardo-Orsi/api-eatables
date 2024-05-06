@@ -1,8 +1,13 @@
+import re
 from typing import Optional
 from pydantic import BaseModel
 from .address import Address
 from .quotation_result import QuotationResult
 
+
+def clean_reference(reference: str) -> str:
+    cleaned_reference = re.sub(r'(_\d+)_', '_', reference)
+    return cleaned_reference
 
 class Quote(BaseModel):
     name: str
@@ -26,7 +31,7 @@ class QuoteResponse(BaseModel):
         for quote in quotation_result.data:
             current_quote = Quote(
                 name=quote.transp_nome,
-                service=quote.referencia,
+                service=clean_reference(quote.referencia),
                 price=quote.vlrFrete,
                 days=quote.prazoEntMin,
                 quote_id=quote.idSimulacao
