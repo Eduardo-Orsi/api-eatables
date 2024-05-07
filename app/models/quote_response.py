@@ -49,4 +49,7 @@ class QuoteResponse(BaseModel):
             quotes.append(current_quote)
 
         response = ShippingScore.select_best_quotations(quotes, address)
+        if quantity >= 2:
+            response[0].price = 0.0
+
         return QuoteResponse(quotes=response)
