@@ -35,8 +35,9 @@ class ShippingScore:
         if best_quote.service == fastest_quote.service:
             best_quote = sorted_by_best_score[1]
 
-        best_quote.name = f"FRETE EXPRESSO"
-        fastest_quote.name = f"FRETE ULTRA EXPRESSO"
+        best_quote.name = "FRETE EXPRESSO"
+        fastest_quote.name = "FRETE ULTRA EXPRESSO"
+        fastest_quote.price = fastest_quote.price * 1.1
 
         if address.uf in DISCOUNT_STATES:
             best_quote.price = 9.90
