@@ -35,8 +35,6 @@ class QuoteResponse(BaseModel):
                                    quantity: int, address: Address) -> "QuoteResponse":
         from ..utils.shipping_score import ShippingScore
         quotes = []
-        fastest_quote = None
-        cheapest_quote = None
 
         for quote in quotation_result.data:
             current_quote = Quote(

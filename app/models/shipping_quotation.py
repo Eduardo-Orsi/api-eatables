@@ -56,6 +56,9 @@ class RequestShippingQuotation(BaseModel):
             if sku.sku == "LOVCHOBOX":
                 love_chocolate_quantity = sku.quantity
 
+            if sku.sku in ["KITLOVCHO2", "KITLOVCHO3"]:
+                love_chocolate_quantity = 2
+
         volume = Volume(
             peso=peso,
             altura=ShippingBox.HEIGHT.value,

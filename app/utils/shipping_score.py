@@ -21,7 +21,9 @@ class ShippingScore:
 
     @staticmethod
     def select_best_quotations(quotations: list[Quote], address: Address) -> list[Quote]:
-        quotations = [quote for quote in quotations if quote.name != "Correios PAC"]
+        if len(quotations) > 2:
+            quotations = [quote for quote in quotations if quote.name != "Correios PAC"]
+
         sorted_by_best_score = sorted(quotations, key=lambda x: ShippingScore.calculate_best_score(x))
         sorted_by_fastest_score = sorted(quotations, key=lambda x: ShippingScore.calculate_fastest_score(x))
 
