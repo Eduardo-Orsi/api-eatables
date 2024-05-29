@@ -46,6 +46,7 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
 
     header = {"token": KANGU_API_KEY}
     response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=None)
+    print(f"Shipping Kangu Status - {response.status_code}")
 
     quantity = request_shipping.volumes[0].quantidade
     quotation_result = QuotationResult(data=response.json())
