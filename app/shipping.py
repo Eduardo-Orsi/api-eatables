@@ -13,6 +13,7 @@ from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
 from .integration.yampi import Yampi
 from .integration.mailchimp import MailChimp
+from .utils.error_kangu import basic_quotation_error
 from .utils.cep import CEP
 
 
@@ -45,8 +46,10 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
     request_shipping = RequestShippingQuotation.load_from_shipping_info(shipping_info)
 
     header = {"token": KANGU_API_KEY}
-    response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=None)
-    print(f"Shipping Kangu Status - {response.status_code}")
+    response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=4)
+
+    if response.status_code != 200:
+        return basic_quotation_error(address=address)
 
     quantity = request_shipping.volumes[0].quantidade
     quotation_result = QuotationResult(data=response.json())
