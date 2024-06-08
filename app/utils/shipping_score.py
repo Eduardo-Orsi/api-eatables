@@ -34,6 +34,12 @@ class ShippingScore:
             if quote.name == "Loggi":
                 best_quote = quote
 
+        if best_quote.service == fastest_quote.service:
+            if len(sorted_by_best_score) < 2:
+                print("ONE QUOTATION ONLY ERROR")
+                return [best_quote]
+            best_quote = sorted_by_best_score[1]
+
         best_quote.name = "FRETE EXPRESSO"
         fastest_quote.name = "FRETE ULTRA EXPRESSO"
         fastest_quote.price = fastest_quote.price * 1.1
@@ -43,9 +49,5 @@ class ShippingScore:
         else:
             best_quote.price = best_quote.price * 0.75
 
-        if best_quote.service == fastest_quote.service:
-            if len(sorted_by_best_score) < 2:
-                return [best_quote]
-            best_quote = sorted_by_best_score[1]
 
         return [best_quote, fastest_quote]
