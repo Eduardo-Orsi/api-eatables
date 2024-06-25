@@ -45,11 +45,11 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
     address = await CEP.get_address_from_cep(shipping_info.zipcode)
     request_shipping = RequestShippingQuotation.load_from_shipping_info(shipping_info)
 
-    header = {"token": KANGU_API_KEY}
-    response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=4)
-
-    if response.status_code != 200:
-        print(f"KANGU API ERROR - {response.status_code}")
+    try:
+        header = {"token": KANGU_API_KEY}
+        response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=4)
+    except Exception as ex:
+        print(f"KANGU API ERROR - {ex}")
         return basic_quotation_error(address=address)
 
     quantity = request_shipping.volumes[0].quantidade
