@@ -41,7 +41,7 @@ class QuoteResponse(BaseModel):
                 name=quote.transp_nome,
                 service=clean_reference(quote.referencia),
                 price=quote.vlrFrete,
-                days=quote.prazoEntMin,
+                days=quote.prazoEnt,
                 quote_id=quote.idSimulacao
             )
             quotes.append(current_quote)
