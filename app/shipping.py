@@ -11,8 +11,10 @@ from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
 from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
+from .models.article import Post, AutomarticlesCheck
 from .integration.yampi import Yampi
 from .integration.mailchimp import MailChimp
+from .integration.shopify import ShopifyIntegration
 from .utils.error_kangu import basic_quotation_error
 from .utils.cep import CEP
 
@@ -23,13 +25,14 @@ KANGU_API_KEY = os.getenv("KANGU_API_KEY")
 SECRET_CODE = os.getenv("SECRET_CODE")
 YAMPI_WEBHOOK_SIGNATURE = str(os.getenv("YAMPI_WEBHOOK_SIGNATURE"))
 YAMPI_SHIPPING_SIGNATURE = str(os.getenv("YAMPI_SHIPPING_SIGNATURE"))
+AUTOMARTICLES_TOKEN = os.getenv("AUTOMARTICLES_TOKEN")
 
 app = FastAPI()
 
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    print(f"\nValidation error: {exc}\n")
+    # print(f"\nValidation error: {exc}\n")
     raise HTTPException(status_code=422, detail=exc.errors())
 
 @app.post("/shipping/")
@@ -56,12 +59,29 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
 
     try:
         quotation_result = QuotationResult(data=response.json())
-    except Exception as es:
+    except Exception:
         print("VALIDATION ERROR")
         return basic_quotation_error(address=address)
 
     quotation_response = QuoteResponse.load_from_quotation_result(quotation_result, quantity, address)
     return quotation_response
+
+
+@app.post("/webhook/automarticles/check/")
+async def automarticles_check(check: AutomarticlesCheck, access_token: Annotated[str | None, Header()] = None):
+    if check.event == "CHECK_INTEGRATION" and access_token == AUTOMARTICLES_TOKEN:
+        return {"token": AUTOMARTICLES_TOKEN}
+    raise HTTPException(status_code=400)
+
+
+@app.post("/webhook/automarticles/article/")
+async def webhook_article(post: Post, access_token: Annotated[str | None, Header()] = None):
+
+    if not access_token == AUTOMARTICLES_TOKEN:
+        raise HTTPException(status_code=404, detail="Access Token not found")
+
+    shopify = ShopifyIntegration("https://de9306.myshopify.com", "2024-01")
+    return shopify.add_article(post)
 
 
 @app.post("/webhook/yampi/")
