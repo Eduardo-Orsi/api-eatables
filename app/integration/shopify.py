@@ -48,6 +48,7 @@ class ShopifyIntegration:
         response = requests.post(url=url, headers=headers, data=payload, timeout=5)
 
         print(f"POST: {post_wrapper.event} - STATUS: {response.status_code}")
+        print(f"PUBLISHED AT: {shopify_article.article.published_at} - PUBLISHED: {shopify_article.article.published}")
 
         return response.json()
 
@@ -65,6 +66,7 @@ class ShopifyIntegration:
             published_at=published_at,
             handle=post_wrapper.post.slug,
             summary_html=post_wrapper.post.description,
+            published=False,
             image=article_image
         )
 
