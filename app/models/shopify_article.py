@@ -16,6 +16,7 @@ class ShopifyArticle(BaseModel):
     published_at: str
     handle: str
     summary_html: str
+    published: bool = False
     image: ArticleImage
 
 
