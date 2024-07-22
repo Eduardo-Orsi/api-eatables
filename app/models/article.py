@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, HttpUrl
 
 
@@ -32,7 +34,7 @@ class Post(BaseModel):
 
 class PostWrapper(BaseModel):
     event: str
-    post: Post
+    post: Optional[Post]
 
 
 class AutomarticlesCheck(BaseModel):
