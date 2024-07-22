@@ -4,14 +4,14 @@ from typing import Annotated
 import requests
 from dotenv import load_dotenv
 from fastapi.exceptions import RequestValidationError
-from fastapi import FastAPI, HTTPException, Request, Header
+from fastapi import FastAPI, HTTPException, Request, Header, Response
 
 from .models.abandoned_cart import YampiEvent
 from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
 from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
-from .models.article import PostWrapper, AutomarticlesCheck
+from .models.article import PostWrapper
 from .integration.yampi import Yampi
 from .integration.mailchimp import MailChimp
 from .integration.shopify import ShopifyIntegration
@@ -78,9 +78,9 @@ async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str
 
     shopify = ShopifyIntegration("https://de9306.myshopify.com/", "2024-01")
 
-    if post_wrapper.event in ["POST_UPDATED"]:
+    if post_wrapper.event in ["POST_UPDATED"] and post_wrapper.post.status == "publish":
         return await shopify.add_article(post_wrapper)
-    return {}
+    return Response({}, status_code=200)
 
 
 @app.post("/webhook/yampi/")
