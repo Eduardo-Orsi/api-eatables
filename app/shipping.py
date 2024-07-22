@@ -67,18 +67,14 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
     return quotation_response
 
 
-@app.post("/webhook/automarticles/check/")
-async def automarticles_check(check: AutomarticlesCheck, access_token: Annotated[str | None, Header()] = None):
-    if check.event == "CHECK_INTEGRATION" and access_token == AUTOMARTICLES_TOKEN:
-        return {"token": AUTOMARTICLES_TOKEN}
-    raise HTTPException(status_code=400)
-
-
 @app.post("/webhook/automarticles/article/")
 async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str | None, Header()] = None):
 
     if not access_token == AUTOMARTICLES_TOKEN:
         raise HTTPException(status_code=404, detail="Access Token not found")
+
+    if post_wrapper.event == "CHECK_INTEGRATION":
+        return {"token": AUTOMARTICLES_TOKEN}
 
     shopify = ShopifyIntegration("https://de9306.myshopify.com/", "2024-01")
 
