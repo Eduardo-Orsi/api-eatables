@@ -34,7 +34,7 @@ class Post(BaseModel):
 
 class PostWrapper(BaseModel):
     event: str
-    post: Optional[Post]
+    post: Optional[Post] = None
 
 
 class AutomarticlesCheck(BaseModel):
