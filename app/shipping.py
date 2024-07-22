@@ -78,7 +78,7 @@ async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str
 
     shopify = ShopifyIntegration("https://de9306.myshopify.com/", "2024-01")
 
-    if post_wrapper.event in ["POST_CREATED", "POST_UPDATED"]:
+    if post_wrapper.event in ["POST_UPDATED"]:
         return await shopify.add_article(post_wrapper)
     return {}
 
