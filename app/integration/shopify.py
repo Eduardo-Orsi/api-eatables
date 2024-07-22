@@ -1,10 +1,11 @@
 import os
+import json
 from datetime import datetime
 
-import shopify
+import requests
 from dotenv import load_dotenv
 
-from ..models.article import Post
+from ..models.article import PostWrapper
 from ..models.shopify_article import ShopifyArticle, ShopifyArticleWrapper, ArticleImage
 
 
@@ -31,37 +32,39 @@ class ShopifyIntegration:
 
     def __init__(self, store_url: str, api_version: str, access_token: str = SHOPIFY_ACCESS_TOKEN) -> None:
         self.api_version = api_version
-        self.session = shopify.Session(store_url, api_version, access_token)
-        shopify.ShopifyResource.activate_session(self.session)
+        self.store_url = store_url
+        self.access_token = access_token
 
-    def add_article(self, post: Post) -> ShopifyArticleWrapper:
-        shopify_article = self.convert_post_to_shopify_article(post)
+    async def add_article(self, post_wrapper: PostWrapper) -> ShopifyArticleWrapper:
+        shopify_article = self.convert_post_to_shopify_article(post_wrapper)
 
-        article = shopify.Article()
-        article.activate_session(self.session)
-        article.create({
-            "items": [shopify_article.model_dump_json()]
-        })
-        json_response = article.to_dict()
-        article.destroy()
-
-        return json_response
-
-    def convert_post_to_shopify_article(self, post: Post) -> ShopifyArticleWrapper:
-        published_at = datetime.fromtimestamp(post.publication_date)
-
-        blog = self.category_to_blog.get(post.category.name)
+        blog = self.category_to_blog.get(post_wrapper.post.category.name)
         if not blog:
             blog = 111765061939
 
-        article_image = ArticleImage(src=post.featured_image.url, alt=post.featured_image.alt_text)
+        url = f"{self.store_url}admin/api/{self.api_version}/blogs/{blog}/articles.json"
+        headers = {"X-Shopify-Access-Token": self.access_token, 'Content-Type': 'application/json'}
+        payload = json.dumps(shopify_article.model_dump())
+        response = requests.post(url=url, headers=headers, data=payload, timeout=5)
+
+        print(f"POST: {post_wrapper.event} - STATUS: {response.status_code}")
+
+        return response.json()
+
+    def convert_post_to_shopify_article(self, post_wrapper: PostWrapper) -> ShopifyArticleWrapper:
+        published_at = datetime.fromtimestamp(post_wrapper.post.publication_date).strftime("%a %b %d %H:%M:%S UTC %Y")
+
+        article_image = ArticleImage(src=post_wrapper.post.featured_image.url.unicode_string(),
+                                     alt=post_wrapper.post.featured_image.alt_text)
+
         shopify_article = ShopifyArticle(
-            title=post.title,
+            title=post_wrapper.post.title,
             author="Eduardo Orsi",
-            blog_id=blog,
-            tags=None,
-            body_html=post.content.html,
+            tags=post_wrapper.event,
+            body_html=post_wrapper.post.content.html,
             published_at=published_at,
+            handle=post_wrapper.post.slug,
+            summary_html=post_wrapper.post.description,
             image=article_image
         )
 

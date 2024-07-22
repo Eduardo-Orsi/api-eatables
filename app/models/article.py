@@ -30,5 +30,10 @@ class Post(BaseModel):
     publication_date: int
 
 
+class PostWrapper(BaseModel):
+    event: str
+    post: Post
+
+
 class AutomarticlesCheck(BaseModel):
     event: str

@@ -1,21 +1,21 @@
 from typing import Optional
-from datetime import datetime
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
 
 class ArticleImage(BaseModel):
-    src: HttpUrl
+    src: str
     alt: str
 
 
 class ShopifyArticle(BaseModel):
     title: str
     author: str
-    blog_id: int
     tags: Optional[str]
     body_html: str
-    published_at: datetime
+    published_at: str
+    handle: str
+    summary_html: str
     image: ArticleImage
 
 

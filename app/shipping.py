@@ -11,7 +11,7 @@ from .models.shipping_info import ShippingInfo
 from .models.quote_response import QuoteResponse
 from .models.quotation_result import QuotationResult
 from .models.shipping_quotation import RequestShippingQuotation
-from .models.article import Post, AutomarticlesCheck
+from .models.article import PostWrapper, AutomarticlesCheck
 from .integration.yampi import Yampi
 from .integration.mailchimp import MailChimp
 from .integration.shopify import ShopifyIntegration
@@ -75,13 +75,16 @@ async def automarticles_check(check: AutomarticlesCheck, access_token: Annotated
 
 
 @app.post("/webhook/automarticles/article/")
-async def webhook_article(post: Post, access_token: Annotated[str | None, Header()] = None):
+async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str | None, Header()] = None):
 
     if not access_token == AUTOMARTICLES_TOKEN:
         raise HTTPException(status_code=404, detail="Access Token not found")
 
-    shopify = ShopifyIntegration("https://de9306.myshopify.com", "2024-01")
-    return shopify.add_article(post)
+    shopify = ShopifyIntegration("https://de9306.myshopify.com/", "2024-01")
+
+    if post_wrapper.event in ["POST_CREATED", "POST_UPDATED"]:
+        return await shopify.add_article(post_wrapper)
+    return {}
 
 
 @app.post("/webhook/yampi/")
