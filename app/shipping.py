@@ -50,7 +50,7 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
 
     try:
         header = {"token": KANGU_API_KEY}
-        response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=3.5)
+        response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=3)
     except Exception as ex:
         print(f"KANGU API ERROR - {ex}")
         return basic_quotation_error(address=address)
