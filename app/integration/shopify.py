@@ -61,6 +61,7 @@ class ShopifyIntegration:
         shopify_article = ShopifyArticle(
             title=post_wrapper.post.title,
             author="Eduardo Orsi",
+            tags=None,
             body_html=post_wrapper.post.content.html,
             published_at=published_at,
             handle=post_wrapper.post.slug,
