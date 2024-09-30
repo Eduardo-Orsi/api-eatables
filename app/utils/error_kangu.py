@@ -5,7 +5,7 @@ from ..utils.shipping_score import ShippingScore
 
 DISCOUNT_STATES = ['RS', 'SC', 'PR', 'SP', 'RJ', 'MG']
 
-def basic_quotation_error(address: Address) -> QuoteResponse:
+def basic_quotation_error(address: Address, quantity: int) -> QuoteResponse:
     basic_quote = Quote(
         name="Loggi",
         service="kangu_E_20999999999988",

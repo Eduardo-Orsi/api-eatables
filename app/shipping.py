@@ -51,17 +51,26 @@ async def shipping(shipping_info: ShippingInfo, request: Request, secret_code: A
     try:
         header = {"token": KANGU_API_KEY}
         response = requests.get(KANGU_API_URL, headers=header, data=request_shipping.model_dump_json(), timeout=3)
+    except TimeoutError:
+        print("TIMEOUT ERROR")
+        return basic_quotation_error(address=address, quantity=request_shipping.volumes[0].quantidade)
     except Exception as ex:
         print(f"KANGU API ERROR - {ex}")
-        return basic_quotation_error(address=address)
+        return basic_quotation_error(address=address, quantity=request_shipping.volumes[0].quantidade)
 
     quantity = request_shipping.volumes[0].quantidade
 
     try:
         quotation_result = QuotationResult(data=response.json())
-    except Exception:
-        print("VALIDATION ERROR")
-        return basic_quotation_error(address=address)
+    except ValueError as json_error:
+        print(f"JSON Parsing Error: {json_error}")
+        return basic_quotation_error(address=address, quantity=request_shipping.volumes[0].quantidade)
+    except KeyError as key_error:
+        print(f"Missing Key Error: {key_error}")
+        return basic_quotation_error(address=address, quantity=request_shipping.volumes[0].quantidade)
+    except Exception as unexpected_error:
+        print(f"Unexpected Error: {unexpected_error}")
+        return basic_quotation_error(address=address, quantity=request_shipping.volumes[0].quantidade)
 
     quotation_response = QuoteResponse.load_from_quotation_result(quotation_result, quantity, address)
     return quotation_response
