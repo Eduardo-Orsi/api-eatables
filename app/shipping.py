@@ -2,13 +2,15 @@ import os
 from typing import Annotated
 
 from dotenv import load_dotenv
+from sqlalchemy.orm import Session
 from fastapi.exceptions import RequestValidationError
-from fastapi import FastAPI, HTTPException, Request, Header, Response
+from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends
 
 from .schema.abandoned_cart import YampiEvent
 from .schema.article import PostWrapper
 from .integration.yampi import Yampi
 from .integration.shopify import ShopifyIntegration
+from .db.database import get_db
 
 
 load_dotenv()
@@ -25,6 +27,10 @@ app = FastAPI()
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     # print(f"\nValidation error: {exc}\n")
     raise HTTPException(status_code=422, detail=exc.errors())
+
+@app.get("/testes")
+async def teste(db: Session = Depends(get_db)):
+    return db.info
 
 @app.post("/webhook/automarticles/article/")
 async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str | None, Header()] = None):
