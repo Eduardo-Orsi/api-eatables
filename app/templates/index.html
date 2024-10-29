@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>loveyuu - Crie seu contador</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f172a;
+            color: white;
+        }
+        .container {
+            margin: 0 auto;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .lang-buttons button {
+            background-color: transparent;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="date"], input[type="time"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #4b5563;
+            background-color: #1e293b;
+            color: white;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 100px;
+        }
+        .radio-group {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .radio-group label {
+            margin-right: 20px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #db2777;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #be185d;
+        }
+        .preview {
+            background-color: #1e293b;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .preview h2 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        .preview-content {
+            background-color: white;
+            border-radius: 8px;
+            height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #4b5563;
+        }
+        .preview-url {
+            margin-bottom: 20px;
+            padding: 5px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+        }
+        .preview-image {
+            width: 150px;
+            height: 150px;
+            border: 2px dashed #cbd5e1;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">❤️ Nosso Amor</div>
+        </header>
+        
+        <h1>Quase lá!</h1>
+        <p class="subtitle">Preencha os dados para criar seu contador</p>
+        
+        <form id="loveyuuForm">
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="plan" value="basic" checked> 1 ano, 3 fotos e sem música - R$29
+                </label>
+                <label>
+                    <input type="radio" name="plan" value="premium"> Pra sempre, 7 fotos e com música - R$49
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label for="coupleName">Nome do casal:</label>
+                <input type="text" id="coupleName" placeholder="André e Carol (Não use emoji)" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="startDate">Início do relacionamento:</label>
+                <input type="date" id="startDate" required>
+                <input type="time" id="startTime" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Mensagem:</label>
+                <textarea id="message" placeholder="Escreva sua linda mensagem aqui. Capricha hein! ❤️" required></textarea>
+            </div>
+            
+            <button type="button" id="uploadPhotos">📷 Escolher fotos do casal (Máximo 3)</button>
+            
+            <div class="preview">
+                <h2>Como vai ficar 👇</h2>
+                <div class="preview-content">
+                    <div class="preview-url">loveyuu.com/</div>
+                    <div class="preview-image">📷</div>
+                </div>
+            </div>
+            
+            <button type="submit">Criar nosso site</button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loveyuuForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Formulário enviado! (Esta é apenas uma demonstração)');
+        });
+
+        document.getElementById('uploadPhotos').addEventListener('click', function() {
+            alert('Funcionalidade de upload de fotos não implementada nesta demonstração.');
+        });
+    </script>
+</body>
+</html>

@@ -5,8 +5,8 @@ from datetime import datetime
 import requests
 from dotenv import load_dotenv
 
-from ..models.article import PostWrapper
-from ..models.shopify_article import ShopifyArticle, ShopifyArticleWrapper, ArticleImage
+from ..schema.article import PostWrapper
+from ..schema.shopify_article import ShopifyArticle, ShopifyArticleWrapper, ArticleImage
 
 
 load_dotenv()
@@ -46,9 +46,6 @@ class ShopifyIntegration:
         headers = {"X-Shopify-Access-Token": self.access_token, 'Content-Type': 'application/json'}
         payload = json.dumps(shopify_article.model_dump())
         response = requests.post(url=url, headers=headers, data=payload, timeout=5)
-
-        print(f"POST: {post_wrapper.event} - STATUS: {response.status_code}")
-        print(f"PUBLISHED AT: {shopify_article.article.published_at} - PUBLISHED: {shopify_article.article.published}")
 
         return response.json()
 
