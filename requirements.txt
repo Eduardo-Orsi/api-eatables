@@ -26,6 +26,7 @@ PyJWT==2.9.0
 pytest==8.0.1
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
+python-multipart==0.0.16
 PyYAML==6.0.1
 requests==2.32.3
 ShopifyAPI==12.6.0
