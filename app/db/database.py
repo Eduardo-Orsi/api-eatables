@@ -9,9 +9,9 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
 load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("sqlite:///./tests.db")
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine("sqlite:///./tests.db")
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 

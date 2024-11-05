@@ -1,16 +1,19 @@
 import os
-from typing import Annotated
+from datetime import date, time
+from typing import Annotated, Optional
 
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from fastapi.exceptions import RequestValidationError
-from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends
+from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, Form, UploadFile
 
 from .schema.abandoned_cart import YampiEvent
 from .schema.article import PostWrapper
 from .integration.yampi import Yampi
 from .integration.shopify import ShopifyIntegration
-from .db.database import get_db
+from .db.database import get_db, Base, engine
+from .models.file import File
+from .controller.relationship_event_controller import RelationshipController
 
 
 load_dotenv()
@@ -19,18 +22,14 @@ YAMPI_WEBHOOK_SIGNATURE = str(os.getenv("YAMPI_WEBHOOK_SIGNATURE"))
 YAMPI_SHIPPING_SIGNATURE = str(os.getenv("YAMPI_SHIPPING_SIGNATURE"))
 AUTOMARTICLES_TOKEN = os.getenv("AUTOMARTICLES_TOKEN")
 
-
 app = FastAPI()
-
+Base.metadata.create_all(bind=engine)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
     # print(f"\nValidation error: {exc}\n")
     raise HTTPException(status_code=422, detail=exc.errors())
 
-@app.get("/testes")
-async def teste(db: Session = Depends(get_db)):
-    return db.info
 
 @app.post("/webhook/automarticles/article/")
 async def webhook_article(post_wrapper: PostWrapper, access_token: Annotated[str | None, Header()] = None):
@@ -56,3 +55,22 @@ async def webhook_yampi(yampi_event: YampiEvent, request: Request, x_yampi_hmac_
                                         YAMPI_WEBHOOK_SIGNATURE)
 
     return yampi_event
+
+
+@app.post("/relationship/create/")
+async def create_relationship(
+    couple_name: str = Form(...),
+    relationship_beginning_date: date = Form(...),
+    relationship_beginning_hour: time = Form(...),
+    message: str = Form(...),
+    files: Optional[list[UploadFile]] = File(),
+    db: Session = Depends(get_db)
+):
+    return await RelationshipController.add_relationship_event(
+        db=db,
+        couple_name=couple_name,
+        relationship_beginning_date=relationship_beginning_date,
+        relationship_beginning_hour=relationship_beginning_hour,
+        message=message,
+        files=files
+    )
