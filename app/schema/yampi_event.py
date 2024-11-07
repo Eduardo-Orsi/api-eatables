@@ -220,14 +220,14 @@ class Promocode(BaseModel):
     newsletter: bool
     updated_at: Timestamp
     customer_id: Optional[int]
-    description: str
+    description: Optional[str]
     items_count: int
     cart_default: bool
     payments_ids: list[int]
     discount_type: str
     free_shipment: bool
     abandoned_cart: bool
-    price_products: float
+    price_products: float | str | None
     for_the_price_of: bool
     product_quantity: int
     once_per_customer: bool
@@ -235,7 +235,7 @@ class Promocode(BaseModel):
 
 
 class PromocodeData(BaseModel):
-    data: Promocode | list
+    data: Promocode | list[Any]
 
 
 class SpreadsheetItem(BaseModel):
@@ -336,7 +336,7 @@ class Transaction(BaseModel):
     holder_document: str | None
     antifraud_status: Optional[str]
     can_be_cancelled: bool
-    gateway_order_id: str
+    gateway_order_id: Optional[str]
     antifraud_sale_id: Optional[str]
     billet_our_number: Optional[str]
     gateway_billet_id: Optional[str]
@@ -353,7 +353,7 @@ class Transaction(BaseModel):
 
 
 class Transactions(BaseModel):
-    data: list[Transaction]
+    data: Optional[list[Transaction]]
 
 
 class ShippingAddress(BaseModel):
@@ -448,7 +448,7 @@ class Resource(BaseModel):
     value_shipment: float
     buyer_value_tax: float
     desire_status_id: list[int]
-    shipment_service: str
+    shipment_service: Optional[str]
     shipping_address: ShippingAddressData
     buyer_value_total: float
     shipment_icon_url: Optional[str]
