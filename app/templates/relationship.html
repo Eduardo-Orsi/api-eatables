@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', path='relationship.css') }}">
+    <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/relationship_303aed26-b086-4d6e-a83a-acc18e5a30ca.css?v=1731011644">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/duration.js"></script>
+    <script>
+        dayjs.extend(window.dayjs_plugin_duration); // Registra o plugin duration
+    </script>
 </head>
 <body>
 
@@ -14,18 +17,44 @@
     <p id="relationship-time" style="display: none;">{{hour}}</p>
 
     <section class="container-master">
-        {% for image in images %}
-            <img src="{{ image.url }}" alt="">
-        {% endfor %}
-        <div class="container-image" id="image-container">{{images}}</div>
+        <div id="slideshow">
+            {% for image in images %}
+                <img src="{{ image.url }}" alt="" style="display: none;" class="style-image">
+            {% endfor %}
+        </div>
         <div class="scrollable-content">
             <p class="text-counter"><strong>Juntos há:</strong> <span id="time-since"></span></p>
             <p class="message">{{message}}</p>
+            <p class="couple_name">{{couple_name}}</p>
         </div>
     </section>
+    
 </body>
 
 <script>
+
+    let images = document.querySelectorAll("#slideshow img");
+    let currentIndex = 0;
+
+    // Exibe a primeira imagem imediatamente
+    function showImage(index) {
+        images.forEach((img, i) => {
+            img.style.display = i === index ? "block" : "none";
+        });
+    }
+
+    // Função de slideshow que troca a imagem
+    function startSlideshow() {
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+    }
+
+    // Mostra a primeira imagem instantaneamente
+    showImage(currentIndex);
+
+    // Inicia o intervalo de troca a cada 2 segundos
+    setInterval(startSlideshow, 2000);
+
     let interval
     function startCounter() {
         clearInterval(interval);
@@ -56,7 +85,6 @@
         }, 1000);
     }
 
-    document.getElementById("relationship-date").addEventListener("change", startCounter);
-    document.getElementById("relationship-time").addEventListener("change", startCounter);
+    startCounter();
 </script>
 </html>
