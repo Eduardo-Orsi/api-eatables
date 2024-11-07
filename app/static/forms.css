@@ -1,0 +1,42 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #030D21;
+    color: white;
+}
+
+.container-master {
+    padding: 5rem;;
+}
+
+.container-title h2 {
+    font-size: 45px;
+}
+
+.container-title p {
+    font-size: 20px;
+    padding-top: .5rem;
+    padding-bottom: 3rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-buttons {
+    padding-bottom: 2rem;
+}
+
+input, button, textarea{
+    border: 2px solid #FF4E6D;
+    border-radius: 5px;
+    padding: .5rem;
+}
+
+
+
