@@ -26,8 +26,9 @@ AZURE_CLIENT_SECRET_VALUE = os.getenv("AZURE_CLIENT_SECRET_VALUE")
 
 
 class RelationshipNotFound(Exception):
-    def __init__(self, error_message: str):
+    def __init__(self, error_message: str, redirect_url: str = None):
         self.error_message = error_message
+        self.redirect_url = redirect_url
 
 
 class RelationshipController:
@@ -81,7 +82,10 @@ class RelationshipController:
     async def get_relationship_event(db: Session, small_id: str) -> dict:
         relationship_event = db.query(RelationshipEvent).filter(RelationshipEvent.small_id == small_id).first()
         if not relationship_event:
-            raise RelationshipNotFound(error_message="Página não encontrada")
+            raise RelationshipNotFound(error_message="Página não encontrada", redirect_url="/create/")
+
+        if not relationship_event.paid:
+            raise RelationshipNotFound(error_message="Página não encontrada", redirect_url="/create/")
 
         context = {
             "message": relationship_event.message,
@@ -109,7 +113,7 @@ class RelationshipController:
                 db.commit()
                 print(relationship_event.small_id)
                 email_content = f"""
-                    Seu site personalizado: http://0.0.0.0:8000/{relationship_event.small_id}/{relationship_event.couple_slug}
+                    Seu site personalizado: https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/{relationship_event.couple_slug}
                 """
 
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
