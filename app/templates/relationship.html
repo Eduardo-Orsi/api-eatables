@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="relationship.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='relationship.css') }}">
     <title>Document</title>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/duration.js"></script>
@@ -14,6 +14,9 @@
     <p id="relationship-time" style="display: none;">{{hour}}</p>
 
     <section class="container-master">
+        {% for image in images %}
+            <img src="{{ image.url }}" alt="">
+        {% endfor %}
         <div class="container-image" id="image-container">{{images}}</div>
         <div class="scrollable-content">
             <p class="text-counter"><strong>Juntos há:</strong> <span id="time-since"></span></p>
