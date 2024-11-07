@@ -1,0 +1,314 @@
+@import url('https://fonts.cdnfonts.com/css/lufga');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+    font-family: 'Lufga', sans-serif;                                              
+}
+
+body {
+    background-color: #030D21; 
+    display: flex;
+    padding: 5rem;
+}
+
+.size-exceeded {
+    display: none;
+    color: #dd1d1d; 
+    font-weight: bold; 
+    margin-top: 10px;
+}
+
+/* Aplica o estilo aos ícones nos navegadores baseados no Webkit */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Inverte a cor para branco */
+    cursor: pointer;
+}
+
+/* Para Mozilla Firefox */
+input[type="date"]::-moz-calendar-picker-indicator,
+input[type="time"]::-moz-calendar-picker-indicator {
+    filter: invert(1); /* Inverte a cor para branco */
+}
+
+.container-master {
+    width: 65%;
+}
+
+.container-title h2 {
+    font-size: 45px;
+}
+
+.container-title p {
+    font-size: 20px;
+    padding-top: .5rem;
+    padding-bottom: 3rem;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-plan {
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 1rem;
+    border: 2px solid #dd1d1d;
+    border-radius: 5px;
+    width: 70%;
+    height: 2.5rem;
+    align-items: center;
+    padding: .5rem;
+}
+
+.plan-text {
+    font-size: 14px;
+}
+
+.container-input {
+    width: max-content;
+}
+
+.container-input-master {
+    display: flex;
+    gap: 1rem;
+    
+}
+
+button, .input-name, .input-date, .input-time, .input-email {
+    border: 2px solid #dd1d1d;
+    border-radius: 5px;
+    width: 20rem;
+    height: 2.5rem;
+    padding: .5rem;
+    background-color: transparent;
+}
+
+.input-email {
+    width: 25rem;
+    margin-bottom: 2rem;
+}
+
+.input-name {
+    width: 25rem;
+}
+
+.input-date {
+    width: 10rem;
+}
+
+.input-time {
+    width: 6rem;
+}
+
+.container-textarea {
+    padding-top: 2rem;  
+}
+
+input::placeholder, textarea::placeholder {
+    color: white;
+}
+
+textarea {
+    border: 2px solid #dd1d1d;
+    border-radius: 5px;
+    width: 80%;
+    height: 15rem;
+    background-color: transparent;
+    padding: .5rem;
+}
+
+.file-upload {
+    display: none; /* Oculta o input de arquivo padrão */
+}
+
+.custom-file-upload {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #dd1d1d;
+    border-radius: 5px;
+    width: 80%;
+    height: 2.5rem;
+    background-color: transparent;
+    color: white;
+    font-weight: bold;
+    padding: .5rem;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.custom-file-upload i {
+    margin-right: 0.5rem;
+    width: 20px;
+    height: 20px;
+}
+
+.preview-container {
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+    padding: 1rem;
+    width: 25%;
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto; /* Adiciona rolagem vertical */
+    overflow-x: hidden;
+    max-height: 80vh; /* Define a altura máxima da janela de visualização */
+}
+
+.preview-container .container-circule {
+    height: 2vh;
+    display: flex;
+    gap: .5rem;
+    width: 100%;
+}
+
+.preview-container .container-circule .circule {
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+}
+
+.preview-container .url {
+    background-color: white;
+    height: 4vh;
+    border-radius: 10px;
+    color: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    width: 100%;
+    padding: 1rem;;
+}
+
+.preview-container .images {
+    width: 265px;
+    height: 345px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border-radius: 10px;
+    flex-shrink: 0; /* Impede que a imagem encolha */
+}
+
+.text-counter {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1rem;
+}
+
+#time-since {
+    text-align: center;
+    line-height: 1.5;
+}
+
+.images img {
+    width: 100%; /* Largura fixa para preencher o contêiner */
+    height: 100%; /* Altura fixa para preencher o contêiner */
+    object-fit: cover; /* Mantém a imagem centralizada e cobre o contêiner */
+    border-radius: 10px;
+}
+
+.message-p {
+    width: 100%;
+    word-wrap: break-word;
+    margin-top: 2rem;;
+    padding-top: 1rem;
+    border-top: 2px solid #504f4f;
+}
+
+.scrollable-content {
+    width: 100%;
+    flex-grow: 1; /* Permite que o conteúdo abaixo da imagem ocupe o espaço restante */
+}
+
+.create-btn {
+    width: 50%;
+    margin-top: 2rem;
+    background-color: #343d4c;
+    border: none;
+    margin-left: 15%;
+}
+
+/* Mobile */
+
+@media (max-width: 1024px) {
+
+    body {
+        flex-direction: column;
+        padding: .5rem;
+    }
+
+    .container-master {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .container-plan {
+        flex-direction: column; /* Coloca os planos um embaixo do outro */
+        width: 100%; /* Ocupa a largura total do contêiner */
+        height: auto; /* Ajusta a altura para caber o conteúdo */
+    }
+
+    .container-input-master {
+        flex-direction: column; /* Coloca os campos de nome e data em coluna */
+        width: 100%;
+        gap: 1rem; /* Espaço entre os campos */
+    }
+
+    .input-email, .input-name, .input-date, .input-time, .textarea, .custom-file-upload {
+        width: 100%; /* Ocupa 100% da largura do contêiner */
+    }
+
+    .container-textarea, .custom-file-upload {
+        width: 100%; /* Mantém a largura total */
+    }
+
+    .form label {
+        width: 100%; /* Mantém o label alinhado à largura total */
+    }
+
+    .container-input {
+        width: 100%;
+    }
+
+    textarea {
+        width: 100%;
+    }
+
+    .preview-container {
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 2rem;
+    }
+
+    #time-since {
+        font-size: 14px;
+    }
+
+    .create-btn {
+        margin-left: 25%;
+    }
+
+}
+
+
+
+
+
+
+
+
+
