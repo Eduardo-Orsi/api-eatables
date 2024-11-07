@@ -1,8 +1,6 @@
 import os
 from typing import Generator, Any
 
-from dotenv import load_dotenv
-
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm import Session
