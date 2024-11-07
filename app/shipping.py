@@ -84,7 +84,7 @@ async def sales_page(request: Request):
 @app.get("/{small_id}/{slug}", response_class=HTMLResponse)
 async def relationship_page(request: Request, small_id: str, slug: str, db: Session = Depends(get_db)):
     context = await RelationshipController.get_relationship_event(db, small_id)
-    return templates.TemplateResponse(request=request, context=context, name="relationship.html")
+    return templates.TemplateResponse(request=request, context=context, name="teste.html")
 
 
 @app.post("/relationship/create/")
