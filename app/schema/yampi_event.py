@@ -235,7 +235,7 @@ class Promocode(BaseModel):
 
 
 class PromocodeData(BaseModel):
-    data: Promocode | list[Any]
+    data: Promocode | list[Any] | dict
 
 
 class SpreadsheetItem(BaseModel):
