@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="relationship.css">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/duration.js"></script>
+</head>
+<body>
+
+    <p id="relationship-date" style="display: none;">{{date}}</p>
+    <p id="relationship-time" style="display: none;">{{hour}}</p>
+
+    <section class="container-master">
+        <div class="container-image" id="image-container">{{images}}</div>
+        <div class="scrollable-content">
+            <p class="text-counter"><strong>Juntos há:</strong> <span id="time-since"></span></p>
+            <p class="message">{{message}}</p>
+        </div>
+    </section>
+</body>
+
+<script>
+    let interval
+    function startCounter() {
+        clearInterval(interval);
+        const dateInput = document.getElementById("relationship-date").innerText;
+        const timeInput = document.getElementById("relationship-time").innerText;
+        const startDateTime = dayjs(`${dateInput}T${timeInput}`);
+
+        if(!startDateTime.isValid()) {
+            document.getElementById("time-since").textContent = "Data ou hora inválida";
+            return;
+        }
+
+        interval = setInterval(() => {
+            const now = dayjs();
+            const duration =  dayjs.duration(now.diff(startDateTime));
+
+            const years = Math.floor(duration.asYears());
+            const months = duration.months();
+            const days = duration.days();
+            const hours = duration.hours();
+            const minutes = duration.minutes();
+            const seconds = duration.seconds();
+
+            document.getElementById("time-since").innerHTML = 
+                `<span>${years} anos, ${months} meses, ${days} dias</span><br><span>${hours} horas, ${minutes} minutos e ${seconds} segundos</span>`;
+
+
+        }, 1000);
+    }
+
+    document.getElementById("relationship-date").addEventListener("change", startCounter);
+    document.getElementById("relationship-time").addEventListener("change", startCounter);
+</script>
+</html>
