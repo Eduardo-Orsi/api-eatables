@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, Form, UploadFile
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from .schema.yampi_event import YampiEvent
@@ -34,16 +34,25 @@ Base.metadata.create_all(bind=engine)
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
-    # print(f"\nValidation error: {exc}\n")
+    print(f"\nValidation error: {exc}\n")
     raise HTTPException(status_code=422, detail=exc.errors())
 
 
 @app.exception_handler(RelationshipNotFound)
 async def unicorn_exception_handler(request: Request, exc: RelationshipNotFound):
+    
+    if exc.redirect_url:
+        return RedirectResponse(url=exc.redirect_url, status_code=304)
+    
     return HTMLResponse(
         status_code=404,
         content=f"<h1>{exc.error_message}</h1>",
     )
+
+
+@app.get("/")
+async def main():
+    return RedirectResponse(url="/create/", status_code=301)
 
 
 @app.post("/webhook/automarticles/article/")
