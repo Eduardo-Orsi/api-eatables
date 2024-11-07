@@ -22,7 +22,7 @@ class EmailSender:
         else:
             raise Exception("Could not obtain access token: " + str(result.get("error_description")))
 
-    def send_email(self, to_emails: list[str], subject: str, content: str):
+    def send_email(self, to_emails: list[str], subject: str, content: str, content_type='Text'):
         url = 'https://graph.microsoft.com/v1.0/users/sac@lovechocolate.com.br/sendMail'
         headers = {
             'Authorization': f'Bearer {self.token}',
@@ -32,7 +32,7 @@ class EmailSender:
             "message": {
                 "subject": subject,
                 "body": {
-                    "contentType": "Text",
+                    "contentType": content_type,
                     "content": content
                 },
                 "toRecipients": [

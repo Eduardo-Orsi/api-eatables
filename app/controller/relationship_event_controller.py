@@ -112,10 +112,22 @@ class RelationshipController:
 
                 relationship_event.paid = True
                 db.commit()
-                print(relationship_event.small_id)
                 email_content = f"""
-                    Seu site personalizado: https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/{relationship_event.couple_slug}
+                    <html>
+                        <body>
+                            <p>Olá!</p>
+                            <p>Seu site romântico está pronto! Você pode acessar aqui:</p>
+                            <p><a href="https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/{relationship_event.couple_slug}">
+                                Clique aqui para ver seu site
+                            </a></p>
+                            <br/>
+                            <p>Ou copie o link abaixo:</p>
+                            <p>https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/{relationship_event.couple_slug}</p>
+                            <p>Atenciosamente,<br/>Time da Love</p>
+                        </body>
+                    </html>
                 """
+                email_title = "Seu site romântico está pronto"
 
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
-                email_sender.send_email(to_emails=[client_email], subject="Teste", content=email_content)
+                email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
