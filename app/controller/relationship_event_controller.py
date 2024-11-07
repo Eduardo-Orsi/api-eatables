@@ -88,6 +88,7 @@ class RelationshipController:
             raise RelationshipNotFound(error_message="Página não encontrada", redirect_url="/create/")
 
         context = {
+            "couple_name": relationship_event.couple_name,
             "message": relationship_event.message,
             "images": relationship_event.files,
             "date": relationship_event.relationship_beginning_date,
