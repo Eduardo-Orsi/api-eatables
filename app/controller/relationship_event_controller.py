@@ -76,7 +76,9 @@ class RelationshipController:
             db.add(file_record)
         db.commit()
         user_email = relationship_event_schema.email
-        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/AMDUAUSCKJ?utm_campaign={user_email}&utm_source={user_email}")
+        if relationship_event_schema.plan.name == "SIMPLE":
+            return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/AMDUAUSCKJ?utm_campaign={user_email}&utm_source={user_email}")
+        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={user_email}&utm_source={user_email}")
 
     @staticmethod
     async def get_relationship_event(db: Session, small_id: str) -> dict:
@@ -105,7 +107,7 @@ class RelationshipController:
         client_email = yampi_event.resource.customer.data.email
 
         for product in yampi_event.resource.items.data:
-            if product.sku.data.sku == "LOVSITE":
+            if product.sku.data.sku in ["LOVSITE", "LOVSITEP"]:
                 relationship_event = db.query(RelationshipEvent).filter(RelationshipEvent.email == client_email).first()
                 if not relationship_event:
                     return
