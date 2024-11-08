@@ -291,7 +291,7 @@ class PaymentData(BaseModel):
 
 
 class TransactionMetadata(BaseModel):
-    data: list[Any] | PixData
+    data: list[Any] | PixData | dict
 
 
 class BilletDate(BaseModel):
@@ -353,7 +353,7 @@ class Transaction(BaseModel):
 
 
 class Transactions(BaseModel):
-    data: Optional[list[Transaction]]
+    data: Optional[list[Transaction]] | Optional[Transaction]
 
 
 class ShippingAddress(BaseModel):
