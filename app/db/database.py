@@ -11,7 +11,14 @@ ENV_SETUP = os.getenv("ENV_SETUP")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if ENV_SETUP == "PROD": 
-    engine = create_engine(DATABASE_URL)
+    engine = create_engine(
+        DATABASE_URL,
+        pool_size=10,             # Set initial pool size
+        max_overflow=20,          # Allow for temporary overflow
+        pool_timeout=30,          # Seconds to wait for connection
+        pool_recycle=1800,        # Recycle connections every 30 minutes
+        pool_pre_ping=True        # Check connection health before using
+    )
 else:
     engine = create_engine("sqlite:///./tests.db")
 
