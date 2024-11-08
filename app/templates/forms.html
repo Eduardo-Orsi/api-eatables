@@ -18,7 +18,7 @@
         </div>
         <form action="/relationship/create/" method="post" class="form" id="form" enctype="multipart/form-data">
             <label for="email">Digite seu melhor email:</label>
-            <input type="email" placeholder="exemple@exemple.com" class="input-email" name="email">
+            <input type="email" required placeholder="exemple@exemple.com" class="input-email" name="email">
             <div class="container-plan">
                 <div>
                     <input checked type="radio" id="input-radio-plan-1" class="input-radio-plan-1" value="simple_plan" name="plan" onclick="setMaxFiles(3)">
@@ -37,17 +37,19 @@
                         class="input-name" 
                         id="name"
                         name="couple_name"
+                        required
                         placeholder="Pedro e Gabrielle (Não use emoji)">
                 </div>
                 <div class="container-input container-input-date">
                     <label for="date">Início do relacionamento</label><br>
-                    <input type="date" class="input-date" id="relationship-date" name="relationship_beginning_date">
-                    <input type="time" class="input-time" id="relationship-time" name="relationship_beginning_hour">
+                    <input required type="date" class="input-date" id="relationship-date" name="relationship_beginning_date">
+                    <input required type="time" class="input-time" id="relationship-time" name="relationship_beginning_hour">
                 </div>
             </div>
             <div class="container-textarea">
                 <label for="message">Mensagem: </label><br>
                 <textarea
+                    required
                     name="message" 
                     id="message" 
                     placeholder="Escreva sua mensagem linda aqui. Capricha hein! 💕"
