@@ -14,6 +14,10 @@ body {
     padding: 5rem;
 }
 
+.create-btn.complete {
+    background-color: #dd1d1d;
+}
+
 .loader {
     width: 20px;
     height: 20px;
