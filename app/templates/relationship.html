@@ -9,8 +9,8 @@
     <meta property="og:image" content="{% if image %}images[0].url{% endif %}">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/png" href="//lovechocolate.com.br/cdn/shop/files/Logo_Love_Chocolate_200x180_75b0d528-0fac-4592-b63d-4dc7b2d2a7d6.png?crop=center&amp;height=32&amp;v=1688484602&amp;width=32">
-    <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/relationship_50011baa-573e-4365-a2fb-4087d0670d8f.css?v=1731428683">
-    <!-- <link rel="stylesheet" href="{{ url_for('static', path='relationship.css') }}"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/relationship_50011baa-573e-4365-a2fb-4087d0670d8f.css?v=1731428683"> -->
+    <link rel="stylesheet" href="{{ url_for('static', path='relationship.css') }}">
     <title>{{couple_name}}</title>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/duration.js"></script>
@@ -19,7 +19,7 @@
     </script>
 </head>
 <body>
-
+    <div class="hearts-container" id="hearts-container" style="display: none;"></div>
     <p id="relationship-date" style="display: none;">{{date}}</p>
     <p id="relationship-time" style="display: none;">{{hour}}</p>
 
@@ -50,8 +50,22 @@
     let images = document.querySelectorAll("#slideshow img");
     let currentIndex = 0;
 
+    const container = document.querySelector('.hearts-container');
+    const numHearts = 50;
+
+    for (let i = 0; i < numHearts; i++) {
+        const heart = document.createElement('img');
+        heart.src = 'https://cdn.shopify.com/s/files/1/0777/8245/0483/files/Coracao_-_Sem_Fundo_5x_480d0cd7-b330-44f5-bec3-17f62d9ca534.png?v=1731011094'; // Caminho para a imagem do coração
+        heart.classList.add('heart');
+        heart.style.left = `${Math.random() * 100}vw`; // Posição horizontal aleatória
+        heart.style.animationDelay = `${Math.random() * 10}s`; // Atraso aleatório
+        heart.style.animationDuration = `${6 + Math.random() * 6}s`; // Duração aleatória
+        container.appendChild(heart);
+    }
+
     function showContent() {
         document.getElementById("page-content").style.display = "block";  // Mostra o conteúdo
+        document.getElementById("hearts-container").style.display = "block";
         document.getElementById("load-page-button").style.display = "none";  // Oculta o botão
     }
 
