@@ -43,7 +43,7 @@ class WordPress:
                     f"{self.__wp_api_url}wp-json/wp/v2/media",
                     headers=wp_headers,
                     content=contents,
-                    timeout=10
+                    timeout=30
                 )
 
                 if response.status_code == 201:
