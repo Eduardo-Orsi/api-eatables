@@ -1,10 +1,13 @@
 import os
+import threading
 from typing import Optional
 from datetime import date, time
 
 from fastapi import UploadFile, HTTPException
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import Column
+from sqlalchemy.dialects.postgresql import UUID
 from pydantic import ValidationError
 
 from ..models.file import File
@@ -65,20 +68,29 @@ class RelationshipController:
 
         wp_site = WordPress(WP_USERNAME, WP_APP_PASSWORD, WP_API_URL)
         for file in files:
-            uploaded_file = await wp_site.upload_file(file)
-            file_record = File(
-                relationship_event_id=relationship_event.id,
-                filename=uploaded_file.title.rendered,
-                content_type=uploaded_file.mime_type,
-                url=uploaded_file.source_url.unicode_string(),
-                wordpress_id=uploaded_file.id
-            )
-            db.add(file_record)
-        db.commit()
+            file_bytes = await file.read()
+            file_upload_thr = threading.Thread(target=RelationshipController.save_files, args=(db, wp_site, relationship_event.id, file, file_bytes))
+            file_upload_thr.start()
+
         user_email = relationship_event_schema.email
+
         if relationship_event_schema.plan.name == "SIMPLE":
             return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/AMDUAUSCKJ?utm_campaign={user_email}&utm_source={user_email}")
-        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={user_email}&utm_source={user_email}")
+        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={user_email}&utm_source={user_email}") 
+
+    @staticmethod
+    def save_files(db: Session, wp: WordPress, relations_ship_id: Column[UUID], file: UploadFile, file_bytes: bytes) -> None:
+        uploaded_file = wp.upload_file(file, file_bytes)
+        file_record = File(
+            relationship_event_id=relations_ship_id,
+            filename=uploaded_file.title.rendered,
+            content_type=uploaded_file.mime_type,
+            url=uploaded_file.source_url.unicode_string(),
+            wordpress_id=uploaded_file.id
+        )
+        db.add(file_record)
+        db.commit()
+        print(f"Arquivo Importador com Sucesso: {file_record.filename}")
 
     @staticmethod
     async def get_relationship_event(db: Session, small_id: str) -> dict:

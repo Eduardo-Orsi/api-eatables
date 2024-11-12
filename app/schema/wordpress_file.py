@@ -49,7 +49,7 @@ class MediaDetails(BaseModel):
         iso: str
         shutter_speed: str
         title: str
-        orientation: str
+        orientation: str | int
         keywords: list[str]
 
     image_meta: Optional[ImageMeta] = None
