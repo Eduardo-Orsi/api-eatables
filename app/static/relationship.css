@@ -57,6 +57,7 @@ body {
     .scrollable-content {
         height: auto;
         width: auto;
+        align-items: center;
     }
 
     .container-master {
