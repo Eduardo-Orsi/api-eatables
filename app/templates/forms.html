@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="//lovechocolate.com.br/cdn/shop/files/Logo_Love_Chocolate_200x180_75b0d528-0fac-4592-b63d-4dc7b2d2a7d6.png?crop=center&amp;height=32&amp;v=1688484602&amp;width=32">
-    <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/forms.css?v=1731007607">
+    <!-- <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/forms.css?v=1731007607"> -->
+     <link rel="stylesheet" href="{{ url_for('static', path='forms.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <title>Love Site - Crie seu site</title>
     <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
@@ -60,9 +61,13 @@
                 <i class="bi bi-camera"></i> 
                 Escolher fotos do casal (Máximo 3)
             </label>
-            <input id="file-upload" type="file" name="files" class="file-upload" multiple accept=".jpg,.jpeg,.png">
+            <input id="file-upload" type="file" name="files" class="file-upload" multiple accept=".jpg,.jpeg,.png" required>
             <div class="size-exceeded" id="size-exceeded"></div>
-            <button type="submit" form="form" class="create-btn">Criar site</button>
+            <button type="submit" form="form" class="create-btn" id="submitButton">
+                Criar site
+                <span class="loader" style="display: none;"></span>
+            </button>
+            <p class="waiting-message">Estamos criando seu site aguarde um momento...</p>
         </form>
     </section>
     <!-- Preview -->
@@ -83,5 +88,26 @@
         </div>
     </section>
     <script src="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/forms.js?v=1731007607"></script>
+    <script>
+        document.getElementById("form").addEventListener("submit", function(event) {
+            const submitButton = document.getElementById("submitButton");
+            const loader = document.querySelector(".loader");
+            const waitingMessage = document.querySelector('.waiting-message');
+
+            // Exibe a mensagem de espera
+            waitingMessage.style.display = 'block';
+
+            // Desabilita o botão
+            submitButton.disabled = true;
+
+            // Exibe o loader e esconde o texto do botão
+            loader.style.display = "inline-block";
+            submitButton.innerHTML = "";  // Remove o texto "Criar site" do botão
+            submitButton.appendChild(loader);  // Adiciona o loader ao botão
+
+            // O formulário será submetido automaticamente
+            // Não é necessário chamar submit() manualmente porque o formulário já será enviado.
+        });
+    </script>
 </body>
 </html>
