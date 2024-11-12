@@ -12,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 
 from .schema.yampi_event import YampiEvent
 from .schema.article import PostWrapper
-from .integration.yampi import Yampi
+# from .integration.yampi import Yampi
 from .integration.shopify import ShopifyIntegration
 from .db.database import get_db, Base, engine
 from .models.file import File
@@ -40,10 +40,10 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
 
 @app.exception_handler(RelationshipNotFound)
 async def unicorn_exception_handler(request: Request, exc: RelationshipNotFound):
-    
+
     if exc.redirect_url:
         return RedirectResponse(url=exc.redirect_url, status_code=304)
-    
+
     return HTMLResponse(
         status_code=404,
         content=f"<h1>{exc.error_message}</h1>",

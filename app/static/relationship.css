@@ -53,9 +53,16 @@ body {
 }
 
 @media (max-width: 1024px) {
+
+    .scrollable-content {
+        height: auto;
+        width: auto;
+    }
+
     .container-master {
         flex-direction: column;
         height: auto;
+        padding: 5rem 0 0 0;
     }
 
     .style-image {
