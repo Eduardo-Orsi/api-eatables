@@ -14,6 +14,28 @@ body {
     padding: 5rem;
 }
 
+.loader {
+    width: 20px;
+    height: 20px;
+    border: 5px solid #FFF;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    margin-right: 10px; /* Para dar espaço entre o loader e o texto */
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+
 .size-exceeded {
     display: none;
     color: #dd1d1d; 
@@ -227,6 +249,7 @@ textarea {
     margin-top: 2rem;;
     padding-top: 1rem;
     border-top: 2px solid #504f4f;
+    text-align: center;
 }
 
 .scrollable-content {
@@ -242,6 +265,12 @@ textarea {
     margin-left: 15%;
 }
 
+.waiting-message {
+    display: none; 
+    margin-left: 18%; 
+    padding: .5rem;
+}
+
 /* Mobile */
 
 @media (max-width: 1024px) {
@@ -249,6 +278,11 @@ textarea {
     body {
         flex-direction: column;
         padding: .5rem;
+    }
+
+    .waiting-message {
+        text-align: center;
+        margin: 0;
     }
 
     .container-master {

@@ -12,6 +12,25 @@ body {
     background-color: #333;
 }
 
+#load-page-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    background-color: #dd1d1d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#load-page-button:hover {
+    background-color: #666;
+}
+
 .container-master {
     width: 100%;
     height: 100vh;
@@ -33,7 +52,7 @@ body {
     width: 500px;
     display: flex;
     flex-direction: column;
-    align-items: start;
+    align-items: center;
     justify-content: space-around;
 }
 
