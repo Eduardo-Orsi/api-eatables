@@ -34,7 +34,7 @@ body {
 
 @keyframes fall {
     0% {
-        transform: translateY(-10vh); /* Começa acima da tela */
+        transform: translateY(-120vh); /* Começa bem acima da tela */
         opacity: 0;
     }
     100% {
@@ -42,6 +42,7 @@ body {
         opacity: 1;
     }
 }
+
 
 #load-page-button {
     position: absolute;
