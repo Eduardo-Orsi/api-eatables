@@ -1,5 +1,6 @@
 import os
 import base64
+import json
 from datetime import date, time
 from typing import Annotated, Optional
 
@@ -120,7 +121,9 @@ async def callback_bling(code: str, state: str):
     print(response.status_code)
     print(response.json())
 
-    return Response(response.json(), status_code=200)
+    response_content = json.dumps(response.json())
+
+    return Response(content=response_content, media_type="application/json", status_code=response.status_code)
 
 
 @app.get("/{small_id}/{slug}", response_class=HTMLResponse)
