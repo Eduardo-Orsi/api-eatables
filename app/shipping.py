@@ -1,7 +1,9 @@
 import os
+import base64
 from datetime import date, time
 from typing import Annotated, Optional
 
+import requests
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from fastapi.exceptions import RequestValidationError
@@ -25,6 +27,8 @@ SECRET_CODE = os.getenv("SECRET_CODE")
 YAMPI_WEBHOOK_SIGNATURE = str(os.getenv("YAMPI_WEBHOOK_SIGNATURE"))
 YAMPI_SHIPPING_SIGNATURE = str(os.getenv("YAMPI_SHIPPING_SIGNATURE"))
 AUTOMARTICLES_TOKEN = os.getenv("AUTOMARTICLES_TOKEN")
+BLING_CLIENT_ID = os.getenv("BLING_CLIENT_ID")
+BLING_CLIENT_SECRET = os.getenv("BLING_CLIENT_SECRET")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -88,6 +92,33 @@ async def webhook_yampi(yampi_event: YampiEvent, request: Request,
 @app.get("/create/", response_class=HTMLResponse)
 async def sales_page(request: Request):
     return templates.TemplateResponse(request=request, name="forms.html")
+
+
+@app.get("/callback/bling/")
+async def callback_bling(code: str, state: str):
+    bling_auth_url = "https://api.bling.com.br/Api/v3/oauth/token"
+    basic_auth = base64.b64encode(f"{BLING_CLIENT_ID}:{BLING_CLIENT_SECRET}").decode()
+
+    if state == "e720a99c3df96dc933eefc69074162ce":
+        raise HTTPException(status_code=404, detail="Invalid State")
+
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "1.0",
+        "Authorization": f"Basic {basic_auth}",
+    }
+
+    data = {
+        "grant_type": "authorization_code",
+        "code": code,
+    }
+
+    response = requests.post(bling_auth_url, headers=headers, data=data, timeout=5)
+
+    print(response.status_code)
+    print(response.json())
+
+    return Response(response.json(), status_code=200)
 
 
 @app.get("/{small_id}/{slug}", response_class=HTMLResponse)
