@@ -97,7 +97,9 @@ async def sales_page(request: Request):
 @app.get("/callback/bling/")
 async def callback_bling(code: str, state: str):
     bling_auth_url = "https://api.bling.com.br/Api/v3/oauth/token"
-    basic_auth = base64.b64encode(f"{BLING_CLIENT_ID}:{BLING_CLIENT_SECRET}").decode()
+
+    credentials = f"{BLING_CLIENT_ID}:{BLING_CLIENT_SECRET}"
+    basic_auth = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
 
     if state == "e720a99c3df96dc933eefc69074162ce":
         raise HTTPException(status_code=404, detail="Invalid State")
