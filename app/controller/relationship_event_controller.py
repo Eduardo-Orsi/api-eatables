@@ -17,6 +17,7 @@ from ..schema.yampi_event import YampiEvent
 from ..integration.wordpress import WordPress
 from ..integration.office_365_mailer import EmailSender
 from ..utils.url_helper import slugfy
+from ..db.database import not_async_get_db
 
 
 WP_API_URL = os.getenv("WP_API_URL")
@@ -80,6 +81,7 @@ class RelationshipController:
 
     @staticmethod
     def save_files(db: Session, wp: WordPress, relations_ship_id: Column[UUID], file: UploadFile, file_bytes: bytes) -> None:
+        db = not_async_get_db()
         uploaded_file = wp.upload_file(file, file_bytes)
         file_record = File(
             relationship_event_id=relations_ship_id,

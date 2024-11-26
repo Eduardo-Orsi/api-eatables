@@ -25,6 +25,9 @@ else:
 Base = declarative_base()
 session = sessionmaker(bind=engine)
 
+def not_async_get_db() -> Session:
+    return session()
+
 def get_db() -> Generator[Session, Any, None]:
     db = session()
     try:
