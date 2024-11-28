@@ -55,9 +55,10 @@ async def unicorn_exception_handler(request: Request, exc: RelationshipNotFound)
     )
 
 
-@app.get("/")
-async def main():
-    return RedirectResponse(url="/create/", status_code=301)
+@app.get("/", response_class=HTMLResponse)
+async def main(request: Request):
+    return templates.TemplateResponse(request=request, name="lp-love-site.html")
+
 
 
 @app.post("/webhook/automarticles/article/")
