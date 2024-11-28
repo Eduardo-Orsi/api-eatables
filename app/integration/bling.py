@@ -65,10 +65,10 @@ class Bling:
             return integration.json_content.get("refresh_token")
 
         except NoResultFound as exc:
-            raise exc.add_note(f"No integration found for platform '{platform}'")
+            raise exc
 
         except AttributeError as exc:
-            raise exc.add_note(f"Refresh token not found in integration data for '{platform}'")
+            raise exc
 
     def update_integration_info(self, data: dict, platform: str = "Bling") -> None:
         """
