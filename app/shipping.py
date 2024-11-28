@@ -17,6 +17,7 @@ from .schema.yampi_event import YampiEvent
 from .schema.article import PostWrapper
 # from .integration.yampi import Yampi
 from .integration.shopify import ShopifyIntegration
+from .integration.bling import Bling
 from .db.database import get_db, Base, engine
 from .models.file import File
 from .controller.relationship_event_controller import RelationshipController, RelationshipNotFound
@@ -97,14 +98,14 @@ async def sales_page(request: Request):
 
 
 @app.get("/callback/bling/")
-async def callback_bling(code: str, state: str):
+async def callback_bling(code: str, state: str, db: Session = Depends(get_db)):
     bling_auth_url = "https://api.bling.com.br/Api/v3/oauth/token"
-
-    credentials = f"{BLING_CLIENT_ID}:{BLING_CLIENT_SECRET}"
-    basic_auth = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
 
     if state == "e720a99c3df96dc933eefc69074162ce":
         raise HTTPException(status_code=404, detail="Invalid State")
+
+    credentials = f"{BLING_CLIENT_ID}:{BLING_CLIENT_SECRET}"
+    basic_auth = base64.b64encode(credentials.encode("utf-8")).decode("utf-8")
 
     headers = {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -118,11 +119,10 @@ async def callback_bling(code: str, state: str):
     }
 
     response = requests.post(bling_auth_url, headers=headers, data=data, timeout=5)
-
-    print(response.status_code)
-    print(response.json())
-
     response_content = json.dumps(response.json())
+
+    bling = Bling(db_session=db)
+    bling.update_integration_info(data=response.json())
 
     return Response(content=response_content, media_type="application/json", status_code=response.status_code)
 
