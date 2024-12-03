@@ -36,22 +36,20 @@ BLING_CLIENT_ID = os.getenv("BLING_CLIENT_ID")
 BLING_CLIENT_SECRET = os.getenv("BLING_CLIENT_SECRET")
 
 
+app = FastAPI()
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="app/templates")
+Base.metadata.create_all(bind=engine)
+
 scheduler = BackgroundScheduler()
 trigger = CronTrigger(hour=12, minute=0)
 scheduler.add_job(sync_orders, trigger)
 scheduler.start()
 
-app = FastAPI()
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     yield
     scheduler.shutdown()
-
-templates = Jinja2Templates(directory="app/templates")
-Base.metadata.create_all(bind=engine)
-
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
