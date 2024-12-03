@@ -2,9 +2,9 @@ import os
 import requests
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import NoResultFound
-from fastapi import HTTPException
 
 from ..models.integrations import Integrations
+from ..models.orders_synced import SyncedOrder
 
 
 class Bling:
@@ -13,15 +13,15 @@ class Bling:
         self.__basic_auth = os.getenv("BLIG_BASIC_AUTH")
         self.db_session = db_session
         self.base_url = "https://api.bling.com.br/Api/v3"
-        self.integration = None
         self.__access_token = self.refresh_token()
+        self.__auth_header = {
+            "Authorization": f"Bearer {self.__access_token}"
+        }
+
 
     def refresh_token(self) -> str:
-        try:
 
-            refresh_token = self.get_refresh_token()
-        except NoResultFound:
-            return
+        refresh_token = self.get_refresh_token()
 
         data = {
             "grant_type": "refresh_token",
@@ -39,6 +39,7 @@ class Bling:
 
         response_data = response.json()
         self.update_integration_info(data=response_data)
+        print("TOKEN BLING SUCESSO")
 
         return response_data["access_token"]
 
@@ -61,7 +62,6 @@ class Bling:
                 .filter(Integrations.platform == platform)
                 .one()
             )
-            self.integration = integration
             return integration.json_content.get("refresh_token")
 
         except NoResultFound as exc:
@@ -73,7 +73,7 @@ class Bling:
     def update_integration_info(self, data: dict, platform: str = "Bling") -> None:
         """
         Save updated integration information to the database.
-        If no integration exists for the platform, create a new one.
+        If no integration exists for the platform, do nothing.
 
         Args:
             data (dict): The new integration data to be saved.
@@ -83,26 +83,50 @@ class Bling:
             Exception: If an unexpected error occurs.
         """
         try:
-            if self.integration:
-                self.integration.json_content = data
-
-            else:
-                integration = (
-                    self.db_session.query(Integrations)
-                    .filter(Integrations.platform == platform)
-                    .one_or_none()
-                )
-
-                if integration is None:
-                    integration = Integrations(
-                        platform=platform,
-                        json_content=data
-                    )
-                    self.db_session.add(integration)
-                else:
-                    integration.json_content = data
-
+            integration_data = (
+                self.db_session.query(Integrations)
+                .filter(Integrations.platform == platform)
+                .update({
+                    'json_content': data
+                })
+            )
             self.db_session.commit()
+
         except Exception as exc:
             self.db_session.rollback()
             raise exc
+
+
+    def get_orders(self, number_of_orders: int = 100) -> dict:
+        response = requests.get(
+            f"{self.base_url}/pedidos/vendas?pagina=1&limite={number_of_orders}&idsSituacoes[]=9&idLoja=204726940",
+            headers=self.__auth_header,
+            timeout=5
+        )
+
+        if not response.status_code == 200:
+            return
+        return response.json()
+
+    def get_order(self, order_id: int | str) -> dict:
+        response = requests.get(f"{self.base_url}/pedidos/vendas/{order_id}", headers=self.__auth_header, timeout=5)
+
+        if not response.status_code == 200:
+            return
+        return response.json()
+
+    def is_order_synced(self, bling_order_id: int):
+        return self.db_session.query(SyncedOrder).filter_by(bling_order_id=bling_order_id).first() is not None
+
+    def mark_order_as_synced(self, bling_order_id: int, yampi_id: str, shopify_order_id: str, tracking_code: str, tracking_url: str, tracking_campany: str):
+        synced_order = SyncedOrder(
+            bling_order_id=bling_order_id,
+            synced=True,
+            yampi_id=yampi_id,
+            shopify_order_id=shopify_order_id,
+            tracking_code=tracking_code,
+            tracking_url=tracking_url,
+            tracking_campany=tracking_campany
+        )
+        self.db_session.add(synced_order)
+        self.db_session.commit()

@@ -2,7 +2,7 @@ import os
 from typing import Generator, Any
 
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -23,7 +23,8 @@ else:
     engine = create_engine("sqlite:///./tests.db")
 
 Base = declarative_base()
-session = sessionmaker(bind=engine)
+session_factory = sessionmaker(bind=engine)
+session = scoped_session(session_factory)
 
 def not_async_get_db() -> Session:
     return session()

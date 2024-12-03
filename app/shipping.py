@@ -3,6 +3,7 @@ import base64
 import json
 from datetime import date, time
 from typing import Annotated, Optional
+from contextlib import asynccontextmanager
 
 import requests
 from dotenv import load_dotenv
@@ -12,15 +13,17 @@ from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, 
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 from .schema.yampi_event import YampiEvent
 from .schema.article import PostWrapper
-# from .integration.yampi import Yampi
 from .integration.shopify import ShopifyIntegration
 from .integration.bling import Bling
 from .db.database import get_db, Base, engine
 from .models.file import File
 from .controller.relationship_event_controller import RelationshipController, RelationshipNotFound
+from .controller.cron_job import sync_orders
 
 
 
@@ -32,11 +35,23 @@ AUTOMARTICLES_TOKEN = os.getenv("AUTOMARTICLES_TOKEN")
 BLING_CLIENT_ID = os.getenv("BLING_CLIENT_ID")
 BLING_CLIENT_SECRET = os.getenv("BLING_CLIENT_SECRET")
 
+
+scheduler = BackgroundScheduler()
+trigger = CronTrigger(hour=12, minute=0)
+scheduler.add_job(sync_orders, trigger)
+scheduler.start()
+
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    scheduler.shutdown()
+
 templates = Jinja2Templates(directory="app/templates")
 Base.metadata.create_all(bind=engine)
+
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
