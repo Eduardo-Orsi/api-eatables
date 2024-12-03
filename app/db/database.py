@@ -23,8 +23,7 @@ else:
     engine = create_engine("sqlite:///./tests.db")
 
 Base = declarative_base()
-session_factory = sessionmaker(bind=engine)
-session = scoped_session(session_factory)
+session = sessionmaker(bind=engine)
 
 def not_async_get_db() -> Session:
     return session()
