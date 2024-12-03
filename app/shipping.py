@@ -1,6 +1,7 @@
 import os
 import base64
 import json
+from zoneinfo import ZoneInfo
 from datetime import date, time
 from typing import Annotated, Optional
 from contextlib import asynccontextmanager
@@ -42,7 +43,7 @@ templates = Jinja2Templates(directory="app/templates")
 Base.metadata.create_all(bind=engine)
 
 scheduler = BackgroundScheduler()
-trigger = CronTrigger(hour=12, minute=0)
+trigger = CronTrigger(hour=12, minute=0, timezone=ZoneInfo("America/Sao_Paulo"))
 scheduler.add_job(sync_orders, trigger)
 scheduler.start()
 
