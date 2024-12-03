@@ -60,7 +60,7 @@ class Bling:
             integration = (
                 self.db_session.query(Integrations)
                 .filter(Integrations.platform == platform)
-                .one()
+                .first()
             )
             return integration.json_content.get("refresh_token")
 
