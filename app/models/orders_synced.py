@@ -2,7 +2,7 @@ import uuid
 from datetime import datetime, timezone
 
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, String, DateTime, Boolean, BigInteger
 
 from ..db.database import Base
 
@@ -12,7 +12,7 @@ class SyncedOrder(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     synced = Column(Boolean, default=False ,nullable=False)
-    bling_order_id = Column(Integer, unique=True, nullable=False)
+    bling_order_id = Column(BigInteger, unique=True, nullable=False)
     yampi_id = Column(String, nullable=False)
     shopify_order_id = Column(String, nullable=False)
     tracking_code = Column(String, nullable=False)
