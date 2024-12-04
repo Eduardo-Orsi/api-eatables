@@ -5,6 +5,7 @@ from zoneinfo import ZoneInfo
 from datetime import date, time
 from typing import Annotated, Optional
 from contextlib import asynccontextmanager
+from threading import Thread
 
 import requests
 from dotenv import load_dotenv
@@ -168,3 +169,9 @@ async def create_relationship(
         email=email,
         files=files
     )
+
+@app.post("/sync")
+def sync_method():
+    thr = Thread(target=sync_orders)
+    thr.start()
+    return {"teste": "ok"}
