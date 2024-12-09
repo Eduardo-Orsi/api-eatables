@@ -170,7 +170,7 @@ async def create_relationship(
         files=files
     )
 
-@app.post("/sync")
+@app.get("/sync")
 def sync_method():
     thr = Thread(target=sync_orders)
     thr.start()

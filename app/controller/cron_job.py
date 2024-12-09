@@ -13,6 +13,7 @@ YAMPI_ALIAS = os.getenv("YAMPI_ALIAS")
 
 def sync_orders() -> None:
     db = not_async_get_db()
+    db.rollback()
     bling = Bling(db_session=db)
     yampi = Yampi(YAMPI_ALIAS, YAMPI_TOKEN, YAMPI_SECRET_KEY)
     shopify = ShopifyIntegration("https://de9306.myshopify.com/", "2024-01")

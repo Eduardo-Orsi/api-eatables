@@ -27,7 +27,8 @@ session_factory = sessionmaker(bind=engine)
 session = scoped_session(session_factory)
 
 def not_async_get_db() -> Session:
-    return session()
+    db = session()
+    return db
 
 def get_db() -> Generator[Session, Any, None]:
     db = session()
