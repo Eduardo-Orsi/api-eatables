@@ -147,3 +147,6 @@ class RelationshipController:
 
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
                 email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
+
+            elif product.sku.data.sku in ["LOVCARDSDIG"]:
+                pass
