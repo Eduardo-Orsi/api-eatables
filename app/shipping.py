@@ -10,6 +10,7 @@ from threading import Thread
 import requests
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, Form, UploadFile
 from fastapi.templating import Jinja2Templates
@@ -20,10 +21,12 @@ from apscheduler.triggers.cron import CronTrigger
 
 from .schema.yampi_event import YampiEvent
 from .schema.article import PostWrapper
+from .schema.love_cards_customer_schema import EmailRegsiter
 from .integration.shopify import ShopifyIntegration
 from .integration.bling import Bling
 from .db.database import get_db, Base, engine
 from .models.file import File
+from .models.love_cards_customers import LoveCardsCustomer
 from .controller.relationship_event_controller import RelationshipController, RelationshipNotFound
 from .controller.cron_job import sync_orders
 
@@ -171,7 +174,22 @@ async def create_relationship(
     )
 
 @app.get("/sync")
-def sync_method():
+async def sync_method():
     thr = Thread(target=sync_orders)
     thr.start()
     return {"teste": "ok"}
+
+@app.post("/love-cards/email")
+async def register_email(email: EmailRegsiter, db: Session = Depends(get_db)):
+    try:
+        love_cards_customer = LoveCardsCustomer(email=email.email)
+        db.add(love_cards_customer)
+        db.commit()
+        return Response({
+            "message": "E-mail adicionado com sucesso!"
+        }, status_code=200)
+
+    except IntegrityError as ex:
+        raise HTTPException(status_code=400, detail="E-mail já está cadastrado") from ex
+    except Exception as ex:
+        raise HTTPException(status_code=400, detail="Erro ao registrar seu e-mail, tente novamente") from ex

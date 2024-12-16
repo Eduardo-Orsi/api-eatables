@@ -28,7 +28,11 @@ def sync_orders() -> None:
             shopify_order_id = shopify.get_order_id_by_name(shopify_order_name)
             full_bling_order = bling.get_order(bling_order["id"])
 
-            package = full_bling_order["data"]["transporte"]["volumes"][0]
+            try:
+                package = full_bling_order["data"]["transporte"]["volumes"][0]
+            except:
+                print(f"Order Does Not Need Tracking: {bling_order["numero"]} - {bling_order["contato"]["nome"]}")
+                continue
             tracking_method = get_tracking_method(package)
 
             shopify.add_tracking_code(
