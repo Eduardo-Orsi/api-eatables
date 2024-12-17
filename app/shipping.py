@@ -46,10 +46,9 @@ app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
+    "http://localhost:5173",
     "https://api-kangu.server.eatables.com.br",
     "https://lovesite.lovechocolate.com.br",
     "https://www.lovesite.lovechocolate.com.br"
