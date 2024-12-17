@@ -192,4 +192,5 @@ async def register_email(email: EmailRegsiter, db: Session = Depends(get_db)):
     except IntegrityError as ex:
         raise HTTPException(status_code=400, detail="E-mail já está cadastrado") from ex
     except Exception as ex:
+        print(ex)
         raise HTTPException(status_code=400, detail="Erro ao registrar seu e-mail, tente novamente") from ex
