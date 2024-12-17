@@ -185,7 +185,8 @@ async def register_email(email: EmailRegsiter, db: Session = Depends(get_db)):
         love_cards_customer = LoveCardsCustomer(email=email.email)
         db.add(love_cards_customer)
         db.commit()
-        return Response("E-mail adicionado com sucesso!", status_code=200)
+        sucess_message = json.dumps({"message": "E-mail adicionado com sucesso!"})
+        return Response(sucess_message, media_type="application/json", status_code=200)
 
     except IntegrityError as ex:
         raise HTTPException(status_code=400, detail="E-mail já está cadastrado") from ex
