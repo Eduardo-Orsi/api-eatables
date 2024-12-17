@@ -15,6 +15,7 @@ from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, Form, UploadFile
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
@@ -43,6 +44,24 @@ BLING_CLIENT_SECRET = os.getenv("BLING_CLIENT_SECRET")
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "http://localhost:5173",
+    "https://api-kangu.server.eatables.com.br",
+    "https://lovesite.lovechocolate.com.br",
+    "https://www.lovesite.lovechocolate.com.br"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 templates = Jinja2Templates(directory="app/templates")
 Base.metadata.create_all(bind=engine)
 
