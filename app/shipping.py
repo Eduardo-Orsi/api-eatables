@@ -2,13 +2,14 @@ import os
 import base64
 import json
 from zoneinfo import ZoneInfo
-from datetime import date, time
 from typing import Annotated, Optional
 from contextlib import asynccontextmanager
 from threading import Thread
+from datetime import date, time, datetime, timezone, timedelta
 
 import requests
 from dotenv import load_dotenv
+from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from fastapi.exceptions import RequestValidationError
@@ -27,7 +28,7 @@ from .integration.shopify import ShopifyIntegration
 from .integration.bling import Bling
 from .db.database import get_db, Base, engine
 from .models.file import File
-from .models.love_cards_customers import LoveCardsCustomer
+from .models.love_cards_customers import LoveCardsCustomer, LoveCardsAuth, generate_otc, send_email_otc
 from .controller.relationship_event_controller import RelationshipController, RelationshipNotFound
 from .controller.cron_job import sync_orders
 
@@ -213,3 +214,57 @@ async def register_email(email: EmailRegsiter, db: Session = Depends(get_db)):
         print(ex.with_traceback())
         print(ex)
         raise HTTPException(status_code=400, detail="Erro ao registrar seu e-mail, tente novamente") from ex
+ 
+
+@app.post("/love-cards/request-code")
+async def request_login_code(cpf: str, db: Session = Depends(get_db)):
+    # Find customer by CPF
+    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cpf).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="CPF não encontrado")
+
+    # Generate new OTC
+    code = generate_otc()
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=15)
+
+    auth = LoveCardsAuth(
+        customer_id=customer.id,
+        code=code,
+        expires_at=expires_at
+    )
+
+    db.add(auth)
+    db.commit()
+
+    send_email_otc(code, customer.email)
+
+    return {"message": "Código enviado com sucesso"}
+
+
+@app.post("/love-cards/validate-code")
+async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)):
+    # Find customer
+    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cpf).first()
+    if not customer:
+        raise HTTPException(status_code=404, detail="CPF não encontrado")
+
+    auth = db.query(LoveCardsAuth).filter(
+        and_(
+            LoveCardsAuth.customer_id == customer.id,
+            LoveCardsAuth.code == code,
+            LoveCardsAuth.used == False,
+            LoveCardsAuth.expires_at > datetime.now(timezone.utc)
+        )
+    ).first()
+
+    if not auth:
+        raise HTTPException(status_code=400, detail="Código inválido ou expirado")
+
+    # Mark code as used
+    auth.used = True
+    db.commit()
+
+    return {
+        "message": "Login realizado com sucesso",
+        "customer_id": str(customer.id)
+    }
