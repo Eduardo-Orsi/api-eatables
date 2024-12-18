@@ -12,6 +12,7 @@ from pydantic import ValidationError
 
 from ..models.file import File
 from ..models.relationship_event import RelationshipEvent
+from ..models.love_cards_customers import LoveCardsCustomer
 from ..schema.relationship_event_schema import RelationshipEventForm
 from ..schema.yampi_event import YampiEvent
 from ..integration.wordpress import WordPress
@@ -149,4 +150,42 @@ class RelationshipController:
                 email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
 
             elif product.sku.data.sku in ["LOVCARDSDIG"]:
-                pass
+                love_cards_costumer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.email == client_email).first()
+                if not love_cards_costumer:
+                    new_customer = LoveCardsCustomer(
+                        email=client_email,
+                        cpf=yampi_event.resource.customer.data.cpf,
+                        paid=True,
+                        paid_at=yampi_event.resource.updated_at.date,
+                        amount_paid=yampi_event.resource.buyer_value_total,
+                        payment_method=yampi_event.resource.payments[0].name
+                    )
+                    db.add(new_customer)
+                    db.commit()
+                else:
+                    love_cards_costumer.cpf = yampi_event.resource.customer.data.cpf
+                    love_cards_costumer.paid = True
+                    love_cards_costumer.paid_at = yampi_event.resource.updated_at.date
+                    love_cards_costumer.amount_paid = yampi_event.resource.buyer_value_total
+                    love_cards_costumer.payment_method = yampi_event.resource.payments[0].name
+                    db.commit()
+
+                email_content = """
+                    <html>
+                        <body>
+                            <p>Olá!</p>
+                            <p>Muito obrigado por comprar o Love Cards versão digital!</p>
+                            <p><a href="https://love-cards-web.pages.dev/">
+                                Clique aqui para acessar as cartas
+                            </a></p>
+                            <p>O login será feito com o CPF que você utilizou em sua compra.</p>
+                            <br/>
+                            <p>Ou copie o link abaixo:</p>
+                            <p>https://love-cards-web.pages.dev/</p>
+                            <p>Atenciosamente,<br/>Time da Love</p>
+                        </body>
+                    </html>
+                """
+                email_title = "Seu acesso ao Love Cards Digital"
+                email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
+                email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
