@@ -34,7 +34,7 @@ def send_email_otc(code: str, client_email: str) -> None:
             </body>
         </html>
     """
-    email_title = "Seu acesso ao Love Cards Digital"
+    email_title = f"Código de Acesso: {code} - Love Cards"
     email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
     email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
 
