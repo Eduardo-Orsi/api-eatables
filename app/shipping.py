@@ -52,7 +52,8 @@ origins = [
     "http://localhost:5173",
     "https://api-kangu.server.eatables.com.br",
     "https://lovesite.lovechocolate.com.br",
-    "https://www.lovesite.lovechocolate.com.br"
+    "https://www.lovesite.lovechocolate.com.br",
+    "https://love-cards-web.pages.dev/"
 ]
 
 app.add_middleware(
