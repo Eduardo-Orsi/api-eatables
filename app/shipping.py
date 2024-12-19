@@ -219,7 +219,9 @@ async def register_email(email: EmailRegsiter, db: Session = Depends(get_db)):
 @app.post("/love-cards/request-code")
 async def request_login_code(cpf: str, db: Session = Depends(get_db)):
     # Find customer by CPF
-    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cpf).first()
+
+    cleaned_cpf = cpf.replace(".", "").replace("-", "").strip().lower()
+    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cleaned_cpf).first()
     if not customer:
         raise HTTPException(status_code=404, detail="CPF não encontrado")
 
@@ -243,8 +245,8 @@ async def request_login_code(cpf: str, db: Session = Depends(get_db)):
 
 @app.post("/love-cards/validate-code")
 async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)):
-    # Find customer
-    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cpf).first()
+    cleaned_cpf = cpf.replace(".", "").replace("-", "").strip().lower()
+    customer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.cpf == cleaned_cpf).first()
     if not customer:
         raise HTTPException(status_code=404, detail="CPF não encontrado")
 
