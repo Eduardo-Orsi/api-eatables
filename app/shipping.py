@@ -238,7 +238,7 @@ async def request_login_code(cpf: str, db: Session = Depends(get_db)):
 
     send_email_otc(code, customer.email)
 
-    return {"message": "Código enviado com sucesso"}
+    return {"message": f"Código enviado para o e-mail: {customer.email}"}
 
 
 @app.post("/love-cards/validate-code")
