@@ -53,7 +53,8 @@ origins = [
     "https://api-kangu.server.eatables.com.br",
     "https://lovesite.lovechocolate.com.br",
     "https://www.lovesite.lovechocolate.com.br",
-    "https://love-cards-web.pages.dev"
+    "https://love-cards-web.pages.dev",
+    "https://lovecards.lovechocolate.com.br"
 ]
 
 app.add_middleware(
