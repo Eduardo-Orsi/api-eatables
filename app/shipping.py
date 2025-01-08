@@ -50,6 +50,7 @@ origins = [
     "http://localhost",
     "http://localhost:8080",
     "http://localhost:5173",
+    "https://love-cards-web-5rx.pages.dev",
     "https://api-kangu.server.eatables.com.br",
     "https://lovesite.lovechocolate.com.br",
     "https://www.lovesite.lovechocolate.com.br",
