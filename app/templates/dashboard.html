@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { border-collapse: collapse; width: 50%; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        h2 { margin-top: 40px; }
+    </style>
+</head>
+<body>
+    <h1>Dashboard</h1>
+
+    <h2>Overview</h2>
+    <ul>
+        <li><strong>Total Customers:</strong> {{ total_customers }}</li>
+        <li><strong>Completed Payments:</strong> {{ completed_payments }}</li>
+        <li><strong>Total Revenue:</strong> ${{ "%.2f"|format(total_revenue) }}</li>
+        <li><strong>Average Payment:</strong> ${{ "%.2f"|format(average_payment) }}</li>
+    </ul>
+
+    <h2>Payment Methods Breakdown</h2>
+    <table>
+        <tr>
+            <th>Payment Method</th>
+            <th>Count</th>
+        </tr>
+        {% for row in payment_method_breakdown %}
+        <!-- row is typically (method, count) -->
+        <tr>
+            <td>{{ row.payment_method if row.payment_method else "Unknown" }}</td>
+            <td>{{ row.method_count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Signups by Date</h2>
+    <table>
+        <tr>
+            <th>Date</th>
+            <th>Signups</th>
+        </tr>
+        {% for row in signups_by_date %}
+        <!-- row is typically (signup_date, signup_count) -->
+        <tr>
+            <td>{{ row.signup_date }}</td>
+            <td>{{ row.signup_count }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Auth Codes Metrics</h2>
+    <ul>
+        <li><strong>Total Auth Codes:</strong> {{ total_auth_codes }}</li>
+        <li><strong>Used Auth Codes:</strong> {{ used_auth_codes }}</li>
+        <li><strong>Unused Auth Codes:</strong> {{ unused_auth_codes }}</li>
+    </ul>
+</body>
+</html>
