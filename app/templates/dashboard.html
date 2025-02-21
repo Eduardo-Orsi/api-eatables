@@ -3,60 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <title>Dashboard</title>
+    <!-- Bootstrap CSS (CDN) -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+    >
+    <!-- Chart.js (CDN) -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"
+    ></script>
+
     <style>
-        body { font-family: Arial, sans-serif; }
-        table { border-collapse: collapse; width: 50%; margin-bottom: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        h2 { margin-top: 40px; }
+        /* Custom Styling Overrides (Optional) */
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding-bottom: 50px;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .card {
+            margin-bottom: 1rem;
+        }
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 2rem;
+        }
+        /* Table styling for data breakdowns */
+        table {
+            width: 100%;
+        }
+        th, td {
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
-    <h1>Dashboard</h1>
 
-    <h2>Overview</h2>
-    <ul>
-        <li><strong>Total Customers:</strong> {{ total_customers }}</li>
-        <li><strong>Completed Payments:</strong> {{ completed_payments }}</li>
-        <li><strong>Total Revenue:</strong> ${{ "%.2f"|format(total_revenue) }}</li>
-        <li><strong>Average Payment:</strong> ${{ "%.2f"|format(average_payment) }}</li>
-    </ul>
+<!-- Navigation Bar -->
+<nav class="navbar navbar-dark bg-dark">
+  <div class="container-fluid">
+    <span class="navbar-brand mb-0">Dashboard</span>
+  </div>
+</nav>
 
-    <h2>Payment Methods Breakdown</h2>
-    <table>
-        <tr>
-            <th>Payment Method</th>
-            <th>Count</th>
-        </tr>
-        {% for row in payment_method_breakdown %}
-        <!-- row is typically (method, count) -->
-        <tr>
-            <td>{{ row.payment_method if row.payment_method else "Unknown" }}</td>
-            <td>{{ row.method_count }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+<!-- Main Container -->
+<div class="container mt-4">
 
-    <h2>Signups by Date</h2>
-    <table>
-        <tr>
-            <th>Date</th>
-            <th>Signups</th>
-        </tr>
-        {% for row in signups_by_date %}
-        <!-- row is typically (signup_date, signup_count) -->
-        <tr>
-            <td>{{ row.signup_date }}</td>
-            <td>{{ row.signup_count }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <!-- Overview Section -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Overview</h2>
+            <div class="card p-3">
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Total Customers:</strong> {{ total_customers }}</li>
+                    <li><strong>Completed Payments:</strong> {{ completed_payments }}</li>
+                    <li><strong>Total Revenue:</strong> ${{ "%.2f"|format(total_revenue) }}</li>
+                    <li><strong>Average Payment:</strong> ${{ "%.2f"|format(average_payment) }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <h2>Auth Codes Metrics</h2>
-    <ul>
-        <li><strong>Total Auth Codes:</strong> {{ total_auth_codes }}</li>
-        <li><strong>Used Auth Codes:</strong> {{ used_auth_codes }}</li>
-        <li><strong>Unused Auth Codes:</strong> {{ unused_auth_codes }}</li>
-    </ul>
+    <!-- Payment Methods Breakdown -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Payment Methods Breakdown</h2>
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Payment Method</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in payment_method_breakdown %}
+                            <tr>
+                                <td>{{ row.payment_method if row.payment_method else "Unknown" }}</td>
+                                <td>{{ row.method_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chart: Payment Methods (Pie) -->
+            <div class="card p-3">
+                <h5>Payment Methods Chart</h5>
+                <div class="chart-container">
+                    <canvas id="paymentMethodsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signups by Date -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Signups by Date</h2>
+            <div class="card p-3">
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Signups</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in signups_by_date %}
+                            <tr>
+                                <td>{{ row.signup_date }}</td>
+                                <td>{{ row.signup_count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chart: Signups Over Time (Bar or Line) -->
+            <div class="card p-3">
+                <h5>Signups Over Time</h5>
+                <div class="chart-container">
+                    <canvas id="signupsChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Codes Metrics -->
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Auth Codes Metrics</h2>
+            <div class="card p-3">
+                <ul class="list-unstyled mb-0">
+                    <li><strong>Total Auth Codes:</strong> {{ total_auth_codes }}</li>
+                    <li><strong>Used Auth Codes:</strong> {{ used_auth_codes }}</li>
+                    <li><strong>Unused Auth Codes:</strong> {{ unused_auth_codes }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scripts to Render Charts -->
+<script>
+    // 1) Payment Methods Data for Pie Chart
+    // Expecting a list of dicts: [{ "payment_method": ..., "method_count": ... }, ...]
+    const paymentMethodsData = JSON.parse('{{ payment_method_breakdown|tojson|safe }}');
+
+    const pmLabels = [];
+    const pmCounts = [];
+
+    paymentMethodsData.forEach(row => {
+        pmLabels.push(row.payment_method || 'Unknown');
+        pmCounts.push(row.method_count);
+    });
+
+    const pmCtx = document.getElementById('paymentMethodsChart').getContext('2d');
+    new Chart(pmCtx, {
+        type: 'pie',
+        data: {
+            labels: pmLabels,
+            datasets: [{
+                data: pmCounts,
+                backgroundColor: [
+                    '#FF6384', '#36A2EB', '#FFCE56',
+                    '#4BC0C0', '#9966FF', '#FF9F40'
+                ],
+                hoverOffset: 4
+            }]
+        }
+    });
+
+    // 2) Signups by Date for Bar/Line Chart
+    // Expecting a list of dicts: [{ "signup_date": ..., "signup_count": ... }, ...]
+    const signupsData = JSON.parse('{{ signups_by_date|tojson|safe }}');
+
+    const dateLabels = [];
+    const signupCounts = [];
+
+    signupsData.forEach(row => {
+        // Convert the date string if needed, or just use row.signup_date directly
+        dateLabels.push(row.signup_date);
+        signupCounts.push(row.signup_count);
+    });
+
+    const signupsCtx = document.getElementById('signupsChart').getContext('2d');
+    new Chart(signupsCtx, {
+        type: 'bar', // or 'line'
+        data: {
+            labels: dateLabels,
+            datasets: [{
+                label: 'Signups',
+                data: signupCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
 </body>
 </html>

@@ -320,6 +320,22 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
 
     unused_auth_codes = total_auth_codes - used_auth_codes
 
+    payment_method_breakdown = [
+        {
+            "payment_method": row[0],
+            "method_count": row[1]
+        }
+        for row in payment_method_breakdown
+    ]
+
+    signups_by_date_list = [
+        {
+            "signup_date": str(row[0]),   # Convert the date or datetime to a string
+            "signup_count": row[1]
+        }
+        for row in signups_by_date
+    ]
+
     return templates.TemplateResponse("dashboard.html", {
         "request": request,
         "total_customers": total_customers,
@@ -327,9 +343,8 @@ def dashboard(request: Request, db: Session = Depends(get_db)):
         "total_revenue": total_revenue,
         "average_payment": average_payment,
         "payment_method_breakdown": payment_method_breakdown,
-        "signups_by_date": signups_by_date,
+        "signups_by_date": signups_by_date_list,
         "total_auth_codes": total_auth_codes,
         "used_auth_codes": used_auth_codes,
         "unused_auth_codes": unused_auth_codes,
     })
-
