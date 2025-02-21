@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from sqlalchemy import and_
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import text
 from fastapi.exceptions import RequestValidationError
 from fastapi import FastAPI, HTTPException, Request, Header, Response, Depends, Form, UploadFile
 from fastapi.templating import Jinja2Templates
@@ -273,3 +274,62 @@ async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)
         "message": "Login realizado com sucesso",
         "customer_id": str(customer.id)
     }
+
+@app.get("/dashboard")
+def dashboard(request: Request, db: Session = Depends(get_db)):
+    # 1) Total customers
+    result = db.execute(text("SELECT COUNT(id) AS total FROM love_cards_customers"))
+    total_customers = result.scalar() or 0
+
+    # 2) Completed payments
+    result = db.execute(text("SELECT COUNT(id) AS total FROM love_cards_customers WHERE paid = TRUE"))
+    completed_payments = result.scalar() or 0
+
+    # 3) Total revenue
+    result = db.execute(text("SELECT COALESCE(SUM(amount_paid), 0) AS total FROM love_cards_customers WHERE paid = TRUE"))
+    total_revenue = result.scalar() or 0.0
+
+    # 4) Average payment
+    result = db.execute(text("SELECT COALESCE(AVG(amount_paid), 0) AS average FROM love_cards_customers WHERE paid = TRUE"))
+    average_payment = result.scalar() or 0.0
+
+    # 5) Payment method breakdown (returns a list of rows: (payment_method, count))
+    result = db.execute(text("""
+        SELECT payment_method, COUNT(id) AS method_count
+        FROM love_cards_customers
+        WHERE paid = TRUE
+        GROUP BY payment_method
+    """))
+    payment_method_breakdown = result.fetchall()  # e.g. [("Visa", 2), ("MasterCard", 3), ...]
+
+    # 6) Signups by date (returns a list of rows: (signup_date, count))
+    result = db.execute(text("""
+        SELECT DATE(created_at) AS signup_date, COUNT(id) AS signup_count
+        FROM love_cards_customers
+        GROUP BY DATE(created_at)
+        ORDER BY DATE(created_at)
+    """))
+    signups_by_date = result.fetchall()  # e.g. [(datetime.date(2024, 2, 18), 1), ...]
+
+    # 7) Auth code metrics
+    result = db.execute(text("SELECT COUNT(id) AS total FROM love_cards_auth"))
+    total_auth_codes = result.scalar() or 0
+
+    result = db.execute(text("SELECT COUNT(id) AS total FROM love_cards_auth WHERE used = TRUE"))
+    used_auth_codes = result.scalar() or 0
+
+    unused_auth_codes = total_auth_codes - used_auth_codes
+
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "total_customers": total_customers,
+        "completed_payments": completed_payments,
+        "total_revenue": total_revenue,
+        "average_payment": average_payment,
+        "payment_method_breakdown": payment_method_breakdown,
+        "signups_by_date": signups_by_date,
+        "total_auth_codes": total_auth_codes,
+        "used_auth_codes": used_auth_codes,
+        "unused_auth_codes": unused_auth_codes,
+    })
+
