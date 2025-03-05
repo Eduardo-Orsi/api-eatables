@@ -120,6 +120,7 @@ class RelationshipController:
             return
 
         client_email = yampi_event.resource.customer.data.email
+        client_cpf = yampi_event.resource.customer.data.cpf
 
         for product in yampi_event.resource.items.data:
             if product.sku.data.sku in ["LOVSITE", "LOVSITEP"]:
@@ -150,7 +151,7 @@ class RelationshipController:
                 email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
 
             elif product.sku.data.sku in ["LOVCARDSDIG", "LOVCARDSDIGQA"]:
-                love_cards_costumer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.email == client_email).first()
+                love_cards_costumer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.email == client_email or LoveCardsCustomer.cpf == client_cpf).first()
                 if not love_cards_costumer:
                     new_customer = LoveCardsCustomer(
                         email=client_email,
