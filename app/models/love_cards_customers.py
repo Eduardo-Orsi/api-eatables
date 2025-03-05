@@ -45,6 +45,7 @@ class LoveCardsCustomer(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String, nullable=False, unique=True)
     cpf = Column(String, unique=True, nullable=True)
+    sku = Column(String, nullable=True)
     paid = Column(Boolean, default=False)
     paid_at = Column(DateTime, nullable=True)
     amount_paid = Column(Float, nullable=True, default=0.0)

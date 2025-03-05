@@ -149,7 +149,7 @@ class RelationshipController:
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
                 email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
 
-            elif product.sku.data.sku in ["LOVCARDSDIG"]:
+            elif product.sku.data.sku in ["LOVCARDSDIG", "LOVCARDSDIGQA"]:
                 love_cards_costumer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.email == client_email).first()
                 if not love_cards_costumer:
                     new_customer = LoveCardsCustomer(
@@ -158,7 +158,8 @@ class RelationshipController:
                         paid=True,
                         paid_at=yampi_event.resource.updated_at.date,
                         amount_paid=yampi_event.resource.buyer_value_total,
-                        payment_method=yampi_event.resource.payments[0].name
+                        payment_method=yampi_event.resource.payments[0].name,
+                        sku=product.sku.data.sku
                     )
                     db.add(new_customer)
                     db.commit()
@@ -168,20 +169,21 @@ class RelationshipController:
                     love_cards_costumer.paid_at = yampi_event.resource.updated_at.date
                     love_cards_costumer.amount_paid = yampi_event.resource.buyer_value_total
                     love_cards_costumer.payment_method = yampi_event.resource.payments[0].name
+                    love_cards_costumer.sku = love_cards_costumer.sku + "," + product.sku.data.sku
                     db.commit()
 
                 email_content = """
                     <html>
                         <body>
                             <p>Olá!</p>
-                            <p>Muito obrigado por comprar o Love Cards versão digital!</p>
-                            <p><a href="https://love-cards-web.pages.dev/">
-                                Clique aqui para acessar as cartas
+                            <p>Muito obrigado por comprar um jogo digital da Love!</p>
+                            <p><a href="https://lovecards.lovechocolate.com.br/">
+                                Clique aqui para acessar o jogo
                             </a></p>
                             <p>O login será feito com o CPF que você utilizou em sua compra.</p>
                             <br/>
                             <p>Ou copie o link abaixo:</p>
-                            <p>https://love-cards-web.pages.dev/</p>
+                            <p>https://lovecards.lovechocolate.com.br/</p>
                             <p>Atenciosamente,<br/>Time da Love</p>
                         </body>
                     </html>
