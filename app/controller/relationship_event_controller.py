@@ -48,7 +48,7 @@ class RelationshipController:
                 relationship_beginning_date=relationship_beginning_date,
                 relationship_beginning_hour=relationship_beginning_hour,
                 plan=plan,
-                email=email,
+                email=email.lower(),
                 paid=False,
                 message=message
             )
@@ -56,7 +56,7 @@ class RelationshipController:
             raise HTTPException(status_code=400, detail=e.errors())
 
         relationship_event = RelationshipEvent(
-            email=relationship_event_schema.email,
+            email=relationship_event_schema.email.lower(),
             couple_name=relationship_event_schema.couple_name,
             relationship_beginning_date=relationship_event_schema.relationship_beginning_date,
             relationship_beginning_hour=relationship_event_schema.relationship_beginning_hour,
@@ -74,11 +74,12 @@ class RelationshipController:
             file_upload_thr = threading.Thread(target=RelationshipController.save_files, args=(db, wp_site, relationship_event.id, file, file_bytes))
             file_upload_thr.start()
 
-        user_email = relationship_event_schema.email
+        user_email = relationship_event_schema.email.lower()
+        small_id = relationship_event.small_id
 
         if relationship_event_schema.plan.name == "SIMPLE":
-            return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/AMDUAUSCKJ?utm_campaign={user_email}&utm_source={user_email}")
-        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={user_email}&utm_source={user_email}") 
+            return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/AMDUAUSCKJ?utm_campaign={small_id}&utm_source={user_email}")
+        return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={small_id}&utm_source={user_email}") 
 
     @staticmethod
     def save_files(db: Session, wp: WordPress, relations_ship_id: Column[UUID], file: UploadFile, file_bytes: bytes) -> None:
@@ -124,7 +125,12 @@ class RelationshipController:
 
         for product in yampi_event.resource.items.data:
             if product.sku.data.sku in ["LOVSITE", "LOVSITEP"]:
-                relationship_event = db.query(RelationshipEvent).filter(RelationshipEvent.email == client_email).first()
+                small_id = yampi_event.resource.customer.data.utm_campaign
+                
+                relationship_event = db.query(RelationshipEvent).filter(
+                    RelationshipEvent.email == client_email or  RelationshipEvent.small_id == small_id
+                ).order_by(RelationshipEvent.created_at.desc()).first()
+
                 if not relationship_event:
                     return
 
@@ -148,7 +154,7 @@ class RelationshipController:
                 email_title = "Seu site romântico está pronto"
 
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
-                email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
+                email_sender.send_email(to_emails=[client_email, relationship_event.email], subject=email_title, content=email_content, content_type="HTML")
 
             elif product.sku.data.sku in ["LOVCARDSDIG", "LOVCARDSDIGQA"]:
                 love_cards_costumer = db.query(LoveCardsCustomer).filter(LoveCardsCustomer.email == client_email or LoveCardsCustomer.cpf == client_cpf).first()
