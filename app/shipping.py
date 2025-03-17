@@ -31,7 +31,7 @@ from .db.database import get_db, Base, engine
 from .models.file import File
 from .models.love_cards_customers import LoveCardsCustomer, LoveCardsAuth, generate_otc, send_email_otc
 from .controller.relationship_event_controller import RelationshipController, RelationshipNotFound
-from .controller.cron_job import sync_orders
+from .controller.cron_job import sync_orders, ping_videofy
 
 
 
@@ -72,7 +72,9 @@ Base.metadata.create_all(bind=engine)
 
 scheduler = BackgroundScheduler()
 trigger = CronTrigger(hour=12, minute=0, timezone=ZoneInfo("America/Sao_Paulo"))
+ping_trigger = CronTrigger(minute="*", timezone=ZoneInfo("America/Sao_Paulo"))
 scheduler.add_job(sync_orders, trigger)
+scheduler.add_job(ping_videofy, ping_trigger)
 scheduler.start()
 
 @asynccontextmanager
