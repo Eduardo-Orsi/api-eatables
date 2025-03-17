@@ -1,5 +1,7 @@
 import os
 
+import requests
+
 from ..integration.yampi import Yampi
 from ..integration.bling import Bling
 from ..integration.shopify import ShopifyIntegration
@@ -10,6 +12,13 @@ YAMPI_TOKEN = os.getenv("YAMPI_TOKEN")
 YAMPI_SECRET_KEY = os.getenv("YAMPI_SECRET_KEY")
 YAMPI_ALIAS = os.getenv("YAMPI_ALIAS")
 
+
+def ping_videofy() -> None:
+    response = requests.get("https://web.videofy.app/", timeout=10)
+    if response.status_code == 200:
+        pass
+    else:
+        print("Videofy is down")
 
 def sync_orders() -> None:
     db = not_async_get_db()
