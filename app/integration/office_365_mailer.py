@@ -42,7 +42,7 @@ class EmailSender:
         }
         response = requests.post(url, headers=headers, json=email_message, timeout=10)
         if response.status_code == 202:
-            print('Email sent successfully.')
+            print(f'Email sent successfully to: {to_emails}')
         else:
             print('Failed to send email.')
             print('Status Code:', response.status_code)

@@ -1,9 +1,10 @@
 import re
 import enum
 import uuid
+from datetime import datetime
 
 from unidecode import unidecode
-from sqlalchemy import Column, String, Date, Time, Enum, Boolean
+from sqlalchemy import Column, String, Date, Time, Enum, Boolean, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
@@ -28,6 +29,7 @@ class RelationshipEvent(Base):
     message = Column(String, nullable=False)
     plan = Column(Enum(PlanType), nullable=False)
     paid = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=datetime.now)
 
     files = relationship('File', back_populates='relationship_event')
 
