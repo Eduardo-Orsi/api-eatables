@@ -20,6 +20,13 @@ def ping_videofy() -> None:
     else:
         print("Videofy is down")
 
+def ping_landing_page() -> None:
+    response = requests.get("https://lp.lovechocolate.com.br/", timeout=3)
+    if response.status_code == 200:
+        pass
+    else:
+        print("Landing Page is down or slow")
+
 def sync_orders() -> None:
     db = not_async_get_db()
     db.rollback()
