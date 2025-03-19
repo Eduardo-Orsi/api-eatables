@@ -172,6 +172,12 @@ async def callback_bling(code: str, state: str, db: Session = Depends(get_db)):
     return Response(content=response_content, media_type="application/json", status_code=response.status_code)
 
 
+@app.get("/{small_id}/finalizar", response_class=HTMLResponse)
+async def relationship_page_finalize(request: Request, small_id: str, db: Session = Depends(get_db)):
+    context = await RelationshipController.get_relationship_event(db, small_id)
+    return templates.TemplateResponse(request=request, context=context, name="forms-update.html")
+
+
 @app.get("/{small_id}/{slug}", response_class=HTMLResponse)
 async def relationship_page(request: Request, small_id: str, slug: str, db: Session = Depends(get_db)):
     context = await RelationshipController.get_relationship_event(db, small_id)
@@ -197,6 +203,26 @@ async def create_relationship(
         message=message,
         plan=plan,
         email=email,
+        files=files
+    )
+
+@app.post("/relationship/{small_id}/")
+async def update_relationship(
+    small_id: str,
+    couple_name: str = Form(...),
+    relationship_beginning_date: date = Form(...),
+    relationship_beginning_hour: time = Form(...),
+    message: str = Form(...),
+    files: Optional[list[UploadFile]] = File(),
+    db: Session = Depends(get_db)
+):
+    return await RelationshipController.update_relationship_event(
+        db=db,
+        small_id=small_id,
+        couple_name=couple_name,
+        relationship_beginning_date=relationship_beginning_date,
+        relationship_beginning_hour=relationship_beginning_hour,
+        message=message,
         files=files
     )
 

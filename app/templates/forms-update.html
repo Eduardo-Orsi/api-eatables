@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="//lovechocolate.com.br/cdn/shop/files/Logo_Love_Chocolate_200x180_75b0d528-0fac-4592-b63d-4dc7b2d2a7d6.png?crop=center&amp;height=32&amp;v=1688484602&amp;width=32">
+    <link rel="stylesheet" href="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/forms.css?v=1731437500">
+    <!-- <link rel="stylesheet" href="{{ url_for('static', path='forms.css') }}"> -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <title>Love Site - Crie seu site</title>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/dayjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dayjs@1.10.4/plugin/duration.js"></script>
+</head>
+<body>
+    <section class="container-master">
+        <div class="container-title">
+            <h2>Quase lá</h2>
+            <p>Preencha os dados para criar seu contador para criar seu site para supreender o mozão</p>
+        </div>
+        <form action="/relationship/{{small_id}}/" method="POST" class="form" id="form" enctype="multipart/form-data">
+            <div class="container-input-master">
+                <div class="container-input container-input-name">
+                    <label for="name">Nome do casal:</label><br>
+                    <input 
+                        type="text" 
+                        class="input-name" 
+                        id="name"
+                        name="couple_name"
+                        required
+                        placeholder="Pedro e Gabrielle (Não use emoji)">
+                </div>
+                <div class="container-input container-input-date">
+                    <label for="date">Início do relacionamento</label><br>
+                    <input required type="date" class="input-date" id="relationship-date" name="relationship_beginning_date">
+                    <input required type="time" class="input-time" id="relationship-time" name="relationship_beginning_hour">
+                </div>
+            </div>
+            <div class="container-textarea">
+                <label for="message">Mensagem: </label><br>
+                <textarea
+                    required
+                    name="message" 
+                    id="message" 
+                    placeholder="Escreva sua mensagem linda aqui. Capricha hein! 💕"
+                    autocomplete="off"
+                    ></textarea>
+            </div>
+            <label for="file-upload" class="custom-file-upload">
+                <i class="bi bi-camera"></i> 
+                Escolher fotos do casal (Máximo 3)
+            </label>
+            <input id="file-upload" type="file" name="files" class="file-upload" multiple accept=".jpg,.jpeg,.png" required>
+            <div class="size-exceeded" id="size-exceeded"></div>
+            <button type="submit" form="form" class="create-btn" id="submitButton">
+                Finalizar site
+                <span class="loader" style="display: none;"></span>
+            </button>
+            <p class="waiting-message">Estamos criando seu site aguarde um momento...</p>
+            <div id="input-radio-plan-1" style="display: none;"></div>
+            <div id="input-radio-plan-2" style="display: none;"></div>
+        </form>
+    </section>
+    <!-- Preview -->
+    <section class="preview-container">
+        <div class="container-circule">
+            <div class="circule" style="background-color: red;"></div>
+            <div class="circule" style="background-color: yellow;"></div>
+            <div class="circule" style="background-color: green;"></div>
+        </div>
+        <div class="url">lovesite.com/<span id="preview-name" style="color: black;"></span></div>
+
+        <div class="images" id="image-container">image</div>
+        
+        <!-- Conteúdo rolável abaixo da imagem -->
+        <div class="scrollable-content">
+            <p class="text-counter"><strong>Juntos há:</strong> <span id="time-since">Calculando...</span></p>
+            <p class="message-p"><span id="preview-message"></span></p>
+        </div>
+    </section>
+    <script src="https://cdn.shopify.com/s/files/1/0777/8245/0483/files/forms.js?v=1731429672"></script>
+    <script>
+        window.addEventListener("load", function() {
+            const dateInput = document.getElementById("relationship-date");
+            const timeInput = document.getElementById("relationship-time");
+            const today = new Date();
+            const formattedDate = today.toISOString().split('T')[0];
+            dateInput.value = formattedDate;
+            const hours = String(today.getHours()).padStart(2, '0');
+            const minutes = String(today.getMinutes()).padStart(2, '0');
+            timeInput.value = `${hours}:${minutes}`;
+        });
+
+        function clearFiles() {
+            const fileUpload = document.getElementById("file-upload");
+            fileUpload.value = ""; // Zera o campo de upload de arquivos
+        }
+
+        function checkRequiredFields() {
+            const requiredFields = form.querySelectorAll("[required]");
+            let allFilled = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    allFilled = false;
+                }
+            });
+
+            if (allFilled) {
+                submitButton.classList.add("complete");
+            } else {
+                submitButton.classList.remove("complete");
+            }
+        }
+
+        form.querySelectorAll("[required]").forEach(field => {
+            field.addEventListener("input", checkRequiredFields);
+        });
+
+        checkRequiredFields();
+
+        document.getElementById("form").addEventListener("submit", function(event) {
+            const submitButton = document.getElementById("submitButton");
+            const loader = document.querySelector(".loader");
+            const waitingMessage = document.querySelector('.waiting-message');
+
+            waitingMessage.style.display = 'block';
+            submitButton.disabled = true;
+            loader.style.display = "inline-block";
+            submitButton.innerHTML = "";  
+            submitButton.appendChild(loader);  
+        });
+
+        function setMaxFiles(maxFiles) {
+            const fileInput = document.getElementById('file-upload');
+            fileInput.setAttribute('data-max-files', maxFiles);
+            const fileLabel = document.querySelector('.custom-file-upload');
+            fileLabel.innerHTML = `<i class="bi bi-camera"></i> Escolher fotos do casal (Máximo ${maxFiles})`;
+        }
+
+        setMaxFiles(7);
+    </script>
+</body>
+</html>

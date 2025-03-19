@@ -22,12 +22,12 @@ class RelationshipEvent(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     small_id = Column(String(8), unique=True, nullable=False, default=generate_small_id)
     email = Column(String, nullable=False)
-    couple_name = Column(String, nullable=False)
-    couple_slug = Column(String, nullable=False)
-    relationship_beginning_date = Column(Date, nullable=False)
-    relationship_beginning_hour = Column(Time, nullable=False)
-    message = Column(String, nullable=False)
-    plan = Column(Enum(PlanType), nullable=False)
+    couple_name = Column(String, nullable=True)
+    couple_slug = Column(String, nullable=True)
+    relationship_beginning_date = Column(Date, nullable=True)
+    relationship_beginning_hour = Column(Time, nullable=True)
+    message = Column(String, nullable=True)
+    plan = Column(Enum(PlanType), nullable=True)
     paid = Column(Boolean, default=False)
     created_at = Column(DateTime, default=datetime.now)
 
@@ -39,6 +39,8 @@ class RelationshipEvent(Base):
             self.couple_slug = self.generate_couple_slug()
 
     def generate_couple_slug(self):
+        if not self.couple_name:
+            return None
         normalized_name = unidecode(self.couple_name).lower()
         slug = re.sub(r'[^a-z0-9]+', '-', normalized_name)
         return slug.strip('-')

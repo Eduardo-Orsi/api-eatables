@@ -82,6 +82,32 @@ class RelationshipController:
         return RedirectResponse(status_code=301, url=f"https://seguro.lovechocolate.com.br/r/RFXUL7Z028?utm_campaign={small_id}&utm_source={user_email}") 
 
     @staticmethod
+    async def update_relationship_event(db: Session, small_id: str, couple_name: str, relationship_beginning_date: date, relationship_beginning_hour: time, message: str, files: Optional[list[UploadFile]]):
+        relationship_event = db.query(RelationshipEvent).filter(RelationshipEvent.small_id == small_id).first()
+        if not relationship_event:
+            raise RelationshipNotFound(error_message="Página não encontrada", redirect_url="/create/")
+
+        relationship_event.couple_name = couple_name
+        relationship_event.relationship_beginning_date = relationship_beginning_date
+        relationship_event.relationship_beginning_hour = relationship_beginning_hour
+        relationship_event.message = message
+        relationship_event.couple_slug = slugfy(relationship_event.couple_name)
+        db.commit()
+
+        wp_site = WordPress(WP_USERNAME, WP_APP_PASSWORD, WP_API_URL)
+        threads = []
+        for file in files:
+            file_bytes = await file.read()
+            file_upload_thr = threading.Thread(target=RelationshipController.save_files, args=(db, wp_site, relationship_event.id, file, file_bytes))
+            file_upload_thr.start()
+            threads.append(file_upload_thr)
+
+        for thread in threads:
+            thread.join()
+
+        return RedirectResponse(status_code=301, url=f"/{small_id}/{relationship_event.couple_slug}")
+
+    @staticmethod
     def save_files(db: Session, wp: WordPress, relations_ship_id: Column[UUID], file: UploadFile, file_bytes: bytes) -> None:
         db = not_async_get_db()
         uploaded_file = wp.upload_file(file, file_bytes)
@@ -110,7 +136,10 @@ class RelationshipController:
             "message": relationship_event.message,
             "images": relationship_event.files,
             "date": relationship_event.relationship_beginning_date,
-            "hour": relationship_event.relationship_beginning_hour
+            "hour": relationship_event.relationship_beginning_hour,
+            "small_id": relationship_event.small_id,
+            "plan": relationship_event.plan,
+            "email": relationship_event.email
         }
 
         return context
@@ -132,6 +161,15 @@ class RelationshipController:
                 ).order_by(RelationshipEvent.created_at.desc()).first()
 
                 if not relationship_event:
+                    plan = "ADVANCED"
+                    new_relationship_event = RelationshipEvent(
+                        email=client_email,
+                        plan=plan,
+                        paid=True
+                    )
+                    db.add(new_relationship_event)
+                    db.commit()
+                    RelationshipController.__send_new_relationship_event_email([client_email], new_relationship_event)
                     return
 
                 relationship_event.paid = True
@@ -198,3 +236,25 @@ class RelationshipController:
                 email_title = "Seu acesso ao Love Cards Digital"
                 email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
                 email_sender.send_email(to_emails=[client_email], subject=email_title, content=email_content, content_type="HTML")
+
+    @staticmethod
+    def __send_new_relationship_event_email(to_emails: list[str], relationship_event: RelationshipEvent):
+        email_content = f"""
+            <html>
+                <body>
+                    <p>Olá!</p>
+                    <p>Seu site romântico está quase pronto! Você deve acessar e finalizar seu site romântico.</p>
+                    <p><a href="https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/finalizar">
+                        Clique aqui para finalizar seu site
+                    </a></p>
+                    <br/>
+                    <p>Ou copie o link abaixo:</p>
+                    <p>https://lovesite.lovechocolate.com.br/{relationship_event.small_id}/finalizar</p>
+                    <p>Atenciosamente,<br/>Time da Love</p>
+                </body>
+            </html>
+        """
+        email_title = "Seu site romântico está quase pronto"
+
+        email_sender = EmailSender(AZURE_APPLICATION_ID, AZURE_CLIENT_SECRET_VALUE, AZURE_TENANT_ID)
+        email_sender.send_email(to_emails=to_emails, subject=email_title, content=email_content, content_type="HTML")
