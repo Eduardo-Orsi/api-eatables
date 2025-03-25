@@ -42,6 +42,8 @@ YAMPI_SHIPPING_SIGNATURE = str(os.getenv("YAMPI_SHIPPING_SIGNATURE"))
 AUTOMARTICLES_TOKEN = os.getenv("AUTOMARTICLES_TOKEN")
 BLING_CLIENT_ID = os.getenv("BLING_CLIENT_ID")
 BLING_CLIENT_SECRET = os.getenv("BLING_CLIENT_SECRET")
+META_APP_ID = os.getenv("META_APP_ID")
+META_APP_SECRET_KEY = os.getenv("META_APP_SECRET_KEY")
 
 
 app = FastAPI()
@@ -303,6 +305,16 @@ async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)
         "products": customer.sku.split(","),
         "customer_id": str(customer.id)
     }
+
+
+@app.get("/facebook/auth/callback/")
+async def facebook_auth_callback(code: str):
+    return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://lovesite.lovechocolate.com.br/facebook/auth/callback/access_token/&client_secret={META_APP_SECRET_KEY}&code={code}")
+
+@app.get("/facebook/auth/callback/access_token/")
+async def facebook_auth_callback(request: Request):
+    body = await request.json()
+    return Response(content=body, media_type="application/json", status_code=200)
 
 @app.get("/dashboard")
 def dashboard(request: Request, db: Session = Depends(get_db)):
