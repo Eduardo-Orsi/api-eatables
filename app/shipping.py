@@ -327,6 +327,10 @@ async def privacy_police(request: Request):
 async def terms_of_service(request: Request):
     return templates.TemplateResponse(request=request, name="terms-of-service.html")
 
+@app.get("/data-delete")
+async def data_delete(request: Request):
+    return templates.TemplateResponse(request=request, name="data-delete.html")
+
 @app.get("/dashboard")
 def dashboard(request: Request, db: Session = Depends(get_db)):
     # 1) Total customers
