@@ -309,7 +309,7 @@ async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)
 
 @app.get("/facebook/auth/callback/")
 async def facebook_auth_callback(code: str):
-    return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://lovesite.lovechocolate.com.br/facebook/auth/callback/access_token/&client_secret={META_APP_SECRET_KEY}&code={code}")
+    return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://app.eatables.com.br/facebook/auth/callback/access_token/&client_secret={META_APP_SECRET_KEY}&code={code}")
 
 
 @app.get("/facebook/auth/callback/access_token/")
