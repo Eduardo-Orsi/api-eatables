@@ -311,10 +311,21 @@ async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)
 async def facebook_auth_callback(code: str):
     return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://lovesite.lovechocolate.com.br/facebook/auth/callback/access_token/&client_secret={META_APP_SECRET_KEY}&code={code}")
 
+
 @app.get("/facebook/auth/callback/access_token/")
-async def facebook_auth_callback(request: Request):
+async def facebook_auth_callback_access_token(request: Request):
     body = await request.json()
     return Response(content=body, media_type="application/json", status_code=200)
+
+
+@app.get("/privacy-police")
+async def privacy_police(request: Request):
+    return templates.TemplateResponse(request=request, name="privacy-police.html")
+
+
+@app.get("/terms-of-service")
+async def terms_of_service(request: Request):
+    return templates.TemplateResponse(request=request, name="terms-of-service.html")
 
 @app.get("/dashboard")
 def dashboard(request: Request, db: Session = Depends(get_db)):
