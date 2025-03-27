@@ -308,8 +308,12 @@ async def validate_login_code(cpf: str, code: str, db: Session = Depends(get_db)
 
 
 @app.get("/facebook/auth/callback/")
-async def facebook_auth_callback(code: str):
-    return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://app.eatables.com.br/facebook/auth/callback/access_token/&client_secret={META_APP_SECRET_KEY}&code={code}")
+async def facebook_auth_callback(request: Request, code: str = None):
+    if not code:
+        body = await request.json()
+        return Response(content=body, media_type="application/json", status_code=200)
+
+    return RedirectResponse(url=f"https://graph.facebook.com/v22.0/oauth/access_token?client_id={META_APP_ID}&redirect_uri=https://app.eatables.com.br/facebook/auth/callback/&client_secret={META_APP_SECRET_KEY}&code={code}")
 
 
 @app.get("/facebook/auth/callback/access_token/")
